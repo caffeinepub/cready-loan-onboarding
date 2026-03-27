@@ -1,32 +1,24 @@
 # Cready Loan Onboarding
 
 ## Current State
-Seven-step onboarding flow (Register → OTP → Analyzing → Dashboard → Offers → Review → ThankYou). Dashboard has a sidebar with menu items (Dashboard, My Offers, Credit Report, Profile, Calculators, Support, Gold Loan) that are NOT clickable/routable.
+Dashboard home (Step4Dashboard.tsx) shows: credit score donut, smart insights, loan calculator/EMI, FD credit cards widget, then a View My Offers button at the bottom.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Route `/my-offers` → MyOffers page (reuse Step5Offers data with sidebar layout)
-- Route `/credit-report` → CreditReport page with full credit history, score breakdown, mock bureau data, animated charts
-- Route `/profile` → Profile page with user details, KYC status, document upload mockups, editable fields
-- Route `/calculators` → Calculators hub page with EMI calculator, eligibility calculator, IFSC finder tool
-- Route `/support` → Support page with ticket list, FAQ accordion, live chat mockup
-- Route `/gold-loan` → GoldLoan page with a full application form (gold weight, purity, valuation, personal details, submit)
-- IFSC Finder tool: search by IFSC code or bank/branch name → show bank name, branch, address, MICR, city (mock data)
-- All new pages share the same dark sidebar layout (DashboardLayout wrapper)
-- Framer-motion animations on all new pages (staggered cards, slide-in panels, animated stats)
+- Recommended Offers section between the calculator and FD cards: 3-4 colorful loan offer cards with gradient backgrounds, lender name, offer amount, interest rate, approval probability bar, "Apply Now" CTA. Use vibrant distinct colors per card (purple, teal, orange, rose).
+- Center-aligned "View All Offers →" button below the recommended offers section.
 
 ### Modify
-- Step4Dashboard sidebar nav items made fully clickable with `useNavigate` routing
-- Sidebar extracted into a shared `DashboardLayout` component used by all dashboard pages
-- App.tsx gets new routes for all 7 new pages
+- Move FD-Backed Credit Cards section to appear after the View All Offers button.
+- Make the FD credit cards more colorful with vivid gradient card backgrounds instead of white.
+- Remove the old bottom View My Offers button (replaced by centered one above FD section).
 
 ### Remove
-- Nothing removed
+- Old bottom `motion.button` for View My Offers.
 
 ## Implementation Plan
-1. Create `src/frontend/src/components/DashboardLayout.tsx` — shared sidebar + wrapper
-2. Refactor Step4Dashboard to use DashboardLayout
-3. Create pages: MyOffers, CreditReport, Profile, Calculators (with IFSC Finder), Support, GoldLoan
-4. Add routes in App.tsx
-5. Validate build
+1. Add a `recommendedOffers` array with 3-4 mock loan offers (lender, amount, rate, approval %, gradient colors).
+2. Render them as animated colorful gradient cards with approval bars after the calculator grid.
+3. Add a centered "View All Offers" button (indigo gradient, full rounded, shadow) below the offers.
+4. Render the FD credit cards section after the button, with gradient card backgrounds (purple, blue, orange).

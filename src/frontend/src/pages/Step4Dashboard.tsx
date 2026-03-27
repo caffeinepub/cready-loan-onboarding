@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../App";
@@ -60,23 +60,99 @@ function CreditScoreDonut({ score }: { score: number }) {
   );
 }
 
+const recommendedOffers = [
+  {
+    bank: "HDFC Bank",
+    type: "Personal Loan",
+    amount: "₹8,00,000",
+    rate: "10.5% p.a.",
+    processing: "1%",
+    approval: 96,
+    badge: "Instant Approval",
+    badgeColor: "bg-green-400 text-green-900",
+    gradient: "from-violet-500 to-purple-700",
+    icon: "🏛️",
+  },
+  {
+    bank: "ICICI Bank",
+    type: "Personal Loan",
+    amount: "₹6,50,000",
+    rate: "11.0% p.a.",
+    processing: "0.5%",
+    approval: 91,
+    badge: "Best Rate",
+    badgeColor: "bg-sky-300 text-sky-900",
+    gradient: "from-teal-500 to-emerald-700",
+    icon: "🏦",
+  },
+  {
+    bank: "Axis Bank",
+    type: "Personal Loan",
+    amount: "₹5,00,000",
+    rate: "12.0% p.a.",
+    processing: "1.5%",
+    approval: 88,
+    badge: "Fast Disbursal",
+    badgeColor: "bg-yellow-300 text-yellow-900",
+    gradient: "from-orange-500 to-rose-600",
+    icon: "⚡",
+  },
+  {
+    bank: "Bajaj Finserv",
+    type: "Personal Loan",
+    amount: "₹10,00,000",
+    rate: "13.0% p.a.",
+    processing: "2%",
+    approval: 85,
+    badge: "High Amount",
+    badgeColor: "bg-orange-300 text-orange-900",
+    gradient: "from-blue-500 to-indigo-700",
+    icon: "💼",
+  },
+];
+
+const fdCards = [
+  {
+    name: "SBM ZET Credit Card",
+    fd: "FD from ₹2,000",
+    fee: "Lifetime Free",
+    gradient: "from-purple-600 to-violet-800",
+    logo: "🏦",
+  },
+  {
+    name: "Tata Neu HDFC Secured",
+    fd: "FD from ₹15,000",
+    fee: "1st Year Free",
+    gradient: "from-blue-600 to-cyan-700",
+    logo: "💳",
+  },
+  {
+    name: "IDFC FIRST Earn Card",
+    fd: "FD from ₹5,000",
+    fee: "1st Year Free",
+    gradient: "from-orange-500 to-rose-600",
+    logo: "🎯",
+  },
+];
+
 export default function Step4Dashboard() {
   const navigate = useNavigate();
   const { name } = useApp();
   const [loanAmt, setLoanAmt] = useState(211000);
   const [tenure, setTenure] = useState(15);
-  const [toast, setToast] = useState(true);
+  const [toastVisible, setToastVisible] = useState(true);
   const emi = Math.round(((loanAmt * 0.075) / tenure) * 10) / 10;
   const total = Math.round(emi * tenure);
 
   useEffect(() => {
-    const t = setTimeout(() => setToast(false), 3500);
+    const t = setTimeout(() => setToastVisible(false), 3500);
     return () => clearTimeout(t);
   }, []);
 
   return (
     <DashboardLayout>
       <div className="p-8 overflow-auto">
+        {/* Welcome header */}
         <div className="flex items-start justify-between mb-6">
           <div>
             <h1 className="text-3xl font-black text-slate-800">
@@ -244,18 +320,169 @@ export default function Step4Dashboard() {
           </div>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => navigate("/offers")}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-xl text-base shadow-lg shadow-indigo-500/30 transition-colors"
-        >
-          View My Offers →
-        </motion.button>
+        {/* Recommended Offers */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-black text-slate-800">
+                  🔥 Recommended For You
+                </h2>
+                <span className="bg-indigo-600 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+                  4 Offers Matched
+                </span>
+              </div>
+              <p className="text-sm text-slate-500 mt-0.5">
+                Based on your credit score 777
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {recommendedOffers.map((offer, i) => (
+              <motion.div
+                key={offer.bank}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.1 }}
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: "0 20px 40px -10px rgba(0,0,0,0.25)",
+                }}
+                className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer`}
+                data-ocid={`dashboard.offer.${i + 1}`}
+              >
+                {/* Background blob */}
+                <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+                <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
+
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-2xl">{offer.icon}</span>
+                    <span
+                      className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${offer.badgeColor}`}
+                    >
+                      {offer.badge}
+                    </span>
+                  </div>
+                  <p className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-0.5">
+                    {offer.bank}
+                  </p>
+                  <p className="text-xs text-white/60 mb-3">{offer.type}</p>
+                  <p className="text-2xl font-black mb-3">{offer.amount}</p>
+
+                  <div className="grid grid-cols-2 gap-2 mb-3 text-[10px]">
+                    <div>
+                      <p className="text-white/60">Interest</p>
+                      <p className="font-bold">{offer.rate}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/60">Processing</p>
+                      <p className="font-bold">{offer.processing}</p>
+                    </div>
+                  </div>
+
+                  {/* Approval bar */}
+                  <div className="mb-3">
+                    <div className="flex justify-between text-[10px] mb-1">
+                      <span className="text-white/70">Approval Chance</span>
+                      <span className="font-bold">{offer.approval}%</span>
+                    </div>
+                    <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${offer.approval}%` }}
+                        transition={{ duration: 1, delay: 0.3 + i * 0.1 }}
+                        className="h-full bg-white rounded-full"
+                      />
+                    </div>
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => navigate("/my-offers")}
+                    data-ocid={`dashboard.offer_apply.${i + 1}`}
+                    className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-bold py-2 rounded-xl border border-white/30 transition-colors"
+                  >
+                    Apply Now
+                  </motion.button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* View All Offers button */}
+        <div className="flex justify-center mb-8">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate("/my-offers")}
+            data-ocid="dashboard.view_all_offers.button"
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-12 py-4 rounded-2xl text-lg shadow-lg shadow-indigo-500/40 transition-all hover:shadow-xl hover:shadow-indigo-500/50"
+          >
+            View All 12 Offers →
+          </motion.button>
+        </div>
+
+        {/* FD-Backed Credit Cards */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
+                FD-Backed Credit Cards
+              </p>
+              <p className="text-sm font-bold text-slate-700">
+                Build credit with secured credit cards
+              </p>
+            </div>
+            <span className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full">
+              Secured
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {fdCards.map((card, i) => (
+              <motion.div
+                key={card.name}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.08 }}
+                whileHover={{ scale: 1.02 }}
+                className={`bg-gradient-to-br ${card.gradient} rounded-xl shadow-md p-4 relative overflow-hidden`}
+                data-ocid={`dashboard.fd_card.${i + 1}`}
+              >
+                {/* Decorative blobs */}
+                <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-white/10" />
+                <div className="absolute -bottom-6 -left-2 w-14 h-14 rounded-full bg-white/5" />
+
+                <div className="relative">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">{card.logo}</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30">
+                      {card.fee}
+                    </span>
+                  </div>
+                  <p className="text-xs font-bold text-white mb-1 leading-tight">
+                    {card.name}
+                  </p>
+                  <p className="text-[10px] text-white/70 mb-3">{card.fd}</p>
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    data-ocid={`dashboard.fd_card_eligibility.${i + 1}`}
+                    className="w-full bg-white text-slate-800 text-xs font-bold py-1.5 rounded-lg hover:bg-white/90 transition-colors"
+                  >
+                    Check Eligibility
+                  </motion.button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <AnimatePresence>
-        {toast && (
+        {toastVisible && (
           <motion.div
             initial={{ opacity: 0, x: 40, y: 20 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
