@@ -15,14 +15,8 @@ function CreditScoreDonut({ score }: { score: number }) {
   }, [circ, pct]);
 
   return (
-    <div className="relative flex items-center justify-center w-48 h-48">
-      <svg
-        aria-hidden="true"
-        width="192"
-        height="192"
-        viewBox="0 0 192 192"
-        className="-rotate-90"
-      >
+    <div className="relative flex items-center justify-center w-full h-auto max-w-[192px] mx-auto">
+      <svg aria-hidden="true" viewBox="0 0 192 192" className="-rotate-90">
         <circle
           cx="96"
           cy="96"
@@ -52,7 +46,9 @@ function CreditScoreDonut({ score }: { score: number }) {
         </defs>
       </svg>
       <div className="absolute text-center">
-        <div className="text-4xl font-black text-slate-800">{score}</div>
+        <div className="text-2xl sm:text-4xl font-black text-slate-800">
+          {score}
+        </div>
         <div className="text-[9px] text-slate-400 tracking-widest uppercase">
           Equifax Score
         </div>
@@ -94,17 +90,8 @@ function EMIDonutChart({
   }, [emi]);
 
   return (
-    <div
-      className="relative flex items-center justify-center"
-      style={{ width: 160, height: 160 }}
-    >
-      <svg
-        aria-hidden="true"
-        width="160"
-        height="160"
-        viewBox="0 0 160 160"
-        className="-rotate-90"
-      >
+    <div className="relative flex items-center justify-center w-full h-auto max-w-[160px] mx-auto">
+      <svg aria-hidden="true" viewBox="0 0 160 160" className="-rotate-90">
         {/* Track */}
         <circle
           cx="80"
@@ -257,9 +244,9 @@ export default function Step4Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 overflow-auto">
+      <div className="p-4 md:p-8 overflow-auto">
         {/* Welcome header */}
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between flex-wrap gap-2 mb-6">
           <div>
             <h1 className="text-3xl font-black text-slate-800">
               Welcome back,{" "}
@@ -292,8 +279,8 @@ export default function Step4Dashboard() {
         </div>
 
         {/* Credit score + Smart Insights */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="md:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
             <CreditScoreDonut score={777} />
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
@@ -313,13 +300,17 @@ export default function Step4Dashboard() {
                   <p className="text-xs text-slate-400 uppercase">
                     Utilization
                   </p>
-                  <p className="text-2xl font-black text-slate-800">12%</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-800">
+                    12%
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-slate-400 uppercase">
                     On-Time Pay
                   </p>
-                  <p className="text-2xl font-black text-green-500">100%</p>
+                  <p className="text-xl sm:text-2xl font-black text-green-500">
+                    100%
+                  </p>
                 </div>
               </div>
               <button
@@ -538,7 +529,7 @@ export default function Step4Dashboard() {
             whileTap={{ scale: 0.97 }}
             onClick={() => navigate("/my-offers")}
             data-ocid="dashboard.view_all_offers.button"
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-12 py-4 rounded-2xl text-lg shadow-lg shadow-indigo-500/40 transition-all hover:shadow-xl hover:shadow-indigo-500/50"
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-6 py-3 md:px-12 md:py-4 rounded-2xl text-base md:text-lg shadow-lg shadow-indigo-500/40 transition-all hover:shadow-xl hover:shadow-indigo-500/50 w-full max-w-xs sm:w-auto"
           >
             View All 12 Offers →
           </motion.button>
@@ -559,7 +550,7 @@ export default function Step4Dashboard() {
               Secured
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {fdCards.map((card, i) => (
               <motion.div
                 key={card.name}
@@ -605,7 +596,7 @@ export default function Step4Dashboard() {
             initial={{ opacity: 0, x: 40, y: 20 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
             exit={{ opacity: 0, x: 40 }}
-            className="fixed bottom-8 right-8 bg-white shadow-2xl rounded-2xl px-5 py-3 z-50 min-w-[220px] border border-slate-100"
+            className="fixed bottom-20 right-4 md:bottom-8 md:right-8 bg-white shadow-2xl rounded-2xl px-5 py-3 z-50 min-w-[220px] border border-slate-100"
           >
             <p className="font-semibold text-sm text-gray-800">
               Analysis Complete
@@ -625,7 +616,7 @@ export default function Step4Dashboard() {
         data-ocid="dashboard.emi_calculator.card"
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4 flex items-center gap-3">
+        <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 md:px-6 md:py-4 flex items-center gap-3">
           <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-lg">
             🧮
           </div>
@@ -639,10 +630,10 @@ export default function Step4Dashboard() {
           </div>
         </div>
 
-        <div className="p-6">
-          <div className="grid grid-cols-5 gap-8">
+        <div className="p-4 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
             {/* Left: Sliders */}
-            <div className="col-span-3 space-y-6">
+            <div className="md:col-span-3 space-y-6">
               {/* Loan Amount */}
               <div>
                 <div className="flex items-center justify-between mb-2">

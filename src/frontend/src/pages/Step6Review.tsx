@@ -358,7 +358,7 @@ export default function Step6Review() {
         <button
           type="button"
           data-ocid="review.back.button"
-          onClick={() => navigate("/offers")}
+          onClick={() => window.history.back()}
           className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors group"
         >
           <span className="flex items-center justify-center w-7 h-7 rounded-full group-hover:bg-white/10 transition-colors">

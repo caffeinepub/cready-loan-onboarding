@@ -33,7 +33,7 @@ const bottomTabs = [
     ),
   },
   {
-    label: "Active Loans",
+    label: "Loans",
     path: "/my-offers",
     icon: (
       <svg
@@ -325,7 +325,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       </motion.div>
 
       {/* Mobile header bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0f172a] border-b border-slate-800 flex items-center justify-between px-4 py-3 h-14">
+      <div
+        className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0f172a] border-b border-slate-800 flex items-center justify-between px-4 py-3 min-h-14"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center">
             <div className="w-2.5 h-2.5 rounded-full bg-white" />
@@ -363,7 +366,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               onTouchStart={handleDrawerTouchStart}
               onTouchEnd={handleDrawerTouchEnd}
-              className="lg:hidden fixed top-0 left-0 z-50 h-full w-72 bg-[#0f172a] flex flex-col shadow-2xl"
+              className="lg:hidden fixed top-0 left-0 z-50 h-full w-[min(288px,85vw)] bg-[#0f172a] flex flex-col shadow-2xl"
               data-ocid="mobile.drawer.panel"
             >
               <div className="p-4 flex items-center justify-between border-b border-slate-800">
@@ -454,7 +457,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               type="button"
               onClick={() => navigate(tab.path)}
               data-ocid={`bottomtab.${tab.label.toLowerCase().replace(/ /g, "_")}.tab`}
-              className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-semibold transition-colors min-h-[44px] ${
+              className={`relative flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-semibold transition-colors min-h-[44px] ${
                 active ? "text-indigo-600" : "text-slate-400"
               }`}
             >
@@ -531,7 +534,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   </div>
                 ))}
               </div>
-              <div className="p-4 border-t border-slate-100 flex gap-2">
+              <div className="p-4 pb-6 border-t border-slate-100 flex gap-2">
                 <input
                   type="text"
                   placeholder="Type your message..."
@@ -571,7 +574,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl p-6 max-h-[80vh] overflow-y-auto"
+              className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl p-6 pb-8 max-h-[80vh] overflow-y-auto"
               data-ocid="faq.panel"
             >
               <div className="flex items-center justify-between mb-4">

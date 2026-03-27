@@ -1,5 +1,12 @@
+import { AnimatePresence, motion } from "motion/react";
 import { createContext, useContext, useEffect, useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import Calculators from "./pages/Calculators";
 import CreditReport from "./pages/CreditReport";
 import GoldLoan from "./pages/GoldLoan";
@@ -10,7 +17,6 @@ import Step1Registration from "./pages/Step1Registration";
 import Step2OTP from "./pages/Step2OTP";
 import Step3Analyzing from "./pages/Step3Analyzing";
 import Step4Dashboard from "./pages/Step4Dashboard";
-import Step5Offers from "./pages/Step5Offers";
 import Step6Review from "./pages/Step6Review";
 import Step7ThankYou from "./pages/Step7ThankYou";
 import Support from "./pages/Support";
@@ -41,6 +47,43 @@ export const AppContext = createContext<AppState>({
 
 export function useApp() {
   return useContext(AppContext);
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, x: 60 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -60 }}
+        transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+        style={{ width: "100%", minHeight: "100vh" }}
+      >
+        <Routes>
+          <Route path="/" element={<Navigate to="/register" replace />} />
+          <Route path="/register" element={<Step1Registration />} />
+          <Route path="/otp" element={<Step2OTP />} />
+          <Route path="/analyzing" element={<Step3Analyzing />} />
+          <Route path="/dashboard" element={<Step4Dashboard />} />
+          <Route
+            path="/offers"
+            element={<Navigate to="/my-offers" replace />}
+          />
+          <Route path="/review" element={<Step6Review />} />
+          <Route path="/success" element={<Step7ThankYou />} />
+          <Route path="/my-offers" element={<MyOffers />} />
+          <Route path="/credit-report" element={<CreditReport />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/calculators" element={<Calculators />} />
+          <Route path="/ifsc-finder" element={<IFSCFinder />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/gold-loan" element={<GoldLoan />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
 }
 
 export default function App() {
@@ -76,23 +119,7 @@ export default function App() {
       }}
     >
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/register" replace />} />
-          <Route path="/register" element={<Step1Registration />} />
-          <Route path="/otp" element={<Step2OTP />} />
-          <Route path="/analyzing" element={<Step3Analyzing />} />
-          <Route path="/dashboard" element={<Step4Dashboard />} />
-          <Route path="/offers" element={<Step5Offers />} />
-          <Route path="/review" element={<Step6Review />} />
-          <Route path="/success" element={<Step7ThankYou />} />
-          <Route path="/my-offers" element={<MyOffers />} />
-          <Route path="/credit-report" element={<CreditReport />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/calculators" element={<Calculators />} />
-          <Route path="/ifsc-finder" element={<IFSCFinder />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/gold-loan" element={<GoldLoan />} />
-        </Routes>
+        <AnimatedRoutes />
       </BrowserRouter>
     </AppContext.Provider>
   );

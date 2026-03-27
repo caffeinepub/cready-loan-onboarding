@@ -359,7 +359,7 @@ export default function MyOffers() {
           </span>
           Recommended Offers
         </h2>
-        <div className="grid grid-cols-2 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
           {recommended.map((o, i) => (
             <motion.div
               key={o.name}
@@ -469,7 +469,7 @@ export default function MyOffers() {
         <h2 className="text-xl font-black text-slate-800 mb-4">
           Matched Offers
         </h2>
-        <div className="grid grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
           {matched.map((o, i) => (
             <motion.div
               key={o.name}

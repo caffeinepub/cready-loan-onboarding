@@ -1127,7 +1127,7 @@ export default function CreditReport() {
                 ↑ +57 pts in 6 months
               </span>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 overflow-x-auto pb-2">
               {scoreHistory.map((s, i) => (
                 <ScoreHistoryBar
                   key={s.month}

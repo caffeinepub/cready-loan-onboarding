@@ -622,7 +622,7 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
-        className="grid grid-cols-3 gap-4"
+        className="grid grid-cols-2 sm:grid-cols-3 gap-4"
       >
         {[
           {
@@ -859,7 +859,7 @@ export default function GoldLoan() {
                   <h3 className="text-lg font-bold text-slate-800">
                     Gold Details
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <p className="text-xs text-slate-400 uppercase tracking-wider block mb-2">
                         Gold Weight (grams)
@@ -1017,7 +1017,7 @@ export default function GoldLoan() {
                   <h3 className="text-lg font-bold text-slate-800">
                     Personal Information
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                       { label: "Full Name", value: fullName, set: setFullName },
                       { label: "Mobile Number", value: mobile, set: setMobile },
@@ -1046,7 +1046,7 @@ export default function GoldLoan() {
                   <h3 className="text-lg font-bold text-slate-800">
                     Review Your Application
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[
                       {
                         label: "Gold Weight",
