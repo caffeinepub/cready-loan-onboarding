@@ -274,13 +274,28 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
             </p>
           </div>
           <motion.button
-            whileHover={{ scale: 1.04 }}
+            whileHover={{
+              scale: 1.04,
+              boxShadow: "0 0 32px rgba(251,191,36,0.6)",
+            }}
             whileTap={{ scale: 0.97 }}
             onClick={onApply}
-            className="bg-white text-amber-600 font-black px-5 py-2.5 rounded-xl text-sm shadow-md hover:shadow-lg transition-shadow"
+            className="relative overflow-hidden bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 text-slate-900 font-black px-7 py-3 rounded-xl text-sm shadow-xl shadow-amber-500/40"
             data-ocid="gold_loan.apply.button"
           >
-            Apply for Gold Loan →
+            <motion.span
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{
+                repeat: Number.POSITIVE_INFINITY,
+                duration: 2.2,
+                ease: "linear",
+              }}
+              style={{ width: "60%" }}
+            />
+            <span className="relative z-10 flex items-center gap-2">
+              Apply for Gold Loan ✦
+            </span>
           </motion.button>
         </div>
       </div>
@@ -734,49 +749,129 @@ export default function GoldLoan() {
   if (submitted) {
     return (
       <DashboardLayout>
-        <div className="p-8 flex items-center justify-center min-h-[80vh]">
+        <div className="p-8 flex items-center justify-center min-h-[80vh] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+          {/* Gold particle dots */}
+          <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            {Array.from({ length: 18 }, (_, i) => i).map((i) => (
+              <motion.div
+                key={`particle-${i}`}
+                className="absolute w-1.5 h-1.5 rounded-full bg-amber-400/60"
+                style={{
+                  left: `${(i * 17) % 100}%`,
+                  top: `${(i * 23 + 10) % 100}%`,
+                }}
+                animate={{ y: [-20, -80], opacity: [0.8, 0], scale: [1, 0.4] }}
+                transition={{
+                  duration: 2 + (i % 3) * 0.5,
+                  delay: i * 0.15,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatDelay: 1,
+                }}
+              />
+            ))}
+          </div>
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-3xl p-10 shadow-xl border border-slate-100 text-center max-w-md w-full"
+            initial={{ scale: 0.85, opacity: 0, y: 30 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 180, damping: 18 }}
+            className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-10 border border-amber-500/30 shadow-2xl shadow-amber-900/40 text-center max-w-md w-full backdrop-blur"
           >
+            {/* Glow ring */}
+            <div className="absolute inset-0 rounded-3xl ring-1 ring-amber-400/20 pointer-events-none" />
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-6"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              className="w-24 h-24 mx-auto mb-6 relative"
             >
-              💛
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-600 flex items-center justify-center text-5xl shadow-xl shadow-amber-500/50">
+                ✦
+              </div>
+              <motion.div
+                className="absolute inset-0 rounded-full ring-4 ring-amber-400/40"
+                animate={{ scale: [1, 1.4, 1], opacity: [0.8, 0, 0.8] }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+              />
             </motion.div>
-            <h2 className="text-2xl font-black text-slate-800 mb-2">
+
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-3xl font-black mb-2"
+              style={{
+                background:
+                  "linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               Application Submitted!
-            </h2>
-            <p className="text-slate-500 mb-4">
-              Your gold loan application has been received.
-            </p>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-              <p className="text-xs text-yellow-600 uppercase tracking-wider mb-1">
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-slate-400 mb-6 text-sm"
+            >
+              Your gold loan application has been received. Our team will reach
+              out shortly.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7 }}
+              className="bg-gradient-to-r from-amber-950/60 to-yellow-950/60 border border-amber-500/40 rounded-2xl p-5 mb-6"
+            >
+              <p className="text-[10px] text-amber-400/80 uppercase tracking-widest mb-2 font-bold">
                 Reference ID
               </p>
-              <p className="text-2xl font-black text-yellow-700 font-mono">
+              <p
+                className="text-3xl font-black font-mono tracking-wider"
+                style={{
+                  background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
                 {refId}
               </p>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm mb-6">
-              <div className="bg-slate-50 rounded-xl p-3">
-                <p className="text-xs text-slate-400">Loan Amount</p>
-                <p className="font-black text-slate-800">
-                  ₹{currentLoan.toLocaleString("en-IN")}
-                </p>
-              </div>
-              <div className="bg-slate-50 rounded-xl p-3">
-                <p className="text-xs text-slate-400">Tenure</p>
-                <p className="font-black text-slate-800">{tenure} Months</p>
-              </div>
-            </div>
-            <p className="text-xs text-slate-400">
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.85 }}
+              className="grid grid-cols-2 gap-3 text-sm mb-6"
+            >
+              {[
+                {
+                  label: "Loan Amount",
+                  value: `₹${currentLoan.toLocaleString("en-IN")}`,
+                },
+                { label: "Tenure", value: `${tenure} Months` },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-3"
+                >
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">
+                    {item.label}
+                  </p>
+                  <p className="font-black text-white">{item.value}</p>
+                </div>
+              ))}
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+              className="text-xs text-slate-500"
+            >
               Our agent will contact you within 2 hours for gold assessment.
-            </p>
+            </motion.p>
           </motion.div>
         </div>
       </DashboardLayout>
@@ -809,10 +904,18 @@ export default function GoldLoan() {
             transition={{ delay: 0.1 }}
             className="mb-8"
           >
-            <h2 className="text-2xl font-black text-slate-800 mb-1">
+            <h2
+              className="text-2xl font-black mb-1"
+              style={{
+                background:
+                  "linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               Gold Loan Application
             </h2>
-            <p className="text-slate-500 text-sm">
+            <p className="text-slate-400 text-sm">
               Get up to 75% of your gold value instantly.
             </p>
           </motion.div>
@@ -824,22 +927,35 @@ export default function GoldLoan() {
                 <div className="flex flex-col items-center">
                   <motion.div
                     animate={{
-                      backgroundColor: i <= step ? "#4f46e5" : "#e2e8f0",
-                      color: i <= step ? "#ffffff" : "#94a3b8",
+                      background:
+                        i < step
+                          ? "linear-gradient(135deg, #f59e0b, #fbbf24)"
+                          : i === step
+                            ? "transparent"
+                            : "transparent",
+                      borderColor: i <= step ? "#f59e0b" : "#334155",
+                      color:
+                        i < step
+                          ? "#1e293b"
+                          : i === step
+                            ? "#fbbf24"
+                            : "#475569",
+                      boxShadow:
+                        i === step ? "0 0 16px rgba(251,191,36,0.4)" : "none",
                     }}
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors"
+                    className="w-9 h-9 rounded-full border-2 flex items-center justify-center text-sm font-black transition-all"
                   >
                     {i < step ? "✓" : i + 1}
                   </motion.div>
                   <span
-                    className={`text-[10px] mt-1 font-semibold whitespace-nowrap ${i <= step ? "text-indigo-600" : "text-slate-400"}`}
+                    className={`text-[10px] mt-1 font-semibold whitespace-nowrap ${i <= step ? "text-amber-400" : "text-slate-500"}`}
                   >
                     {s}
                   </span>
                 </div>
                 {i < steps.length - 1 && (
                   <div
-                    className={`flex-1 h-0.5 mx-2 mb-4 ${i < step ? "bg-indigo-600" : "bg-slate-200"}`}
+                    className={`flex-1 h-px mx-2 mb-4 ${i < step ? "bg-gradient-to-r from-amber-500 to-amber-400" : "bg-slate-700"}`}
                   />
                 )}
               </div>
@@ -852,16 +968,23 @@ export default function GoldLoan() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
-              className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6"
+              className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 border border-amber-500/30 shadow-xl shadow-amber-900/20 backdrop-blur mb-6"
             >
               {step === 0 && (
                 <div className="space-y-5">
-                  <h3 className="text-lg font-bold text-slate-800">
+                  <h3
+                    className="text-lg font-black"
+                    style={{
+                      background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
                     Gold Details
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-slate-400 uppercase tracking-wider block mb-2">
+                      <p className="text-xs text-amber-400/70 uppercase tracking-wider block mb-2 font-bold">
                         Gold Weight (grams)
                       </p>
                       <input
@@ -870,12 +993,12 @@ export default function GoldLoan() {
                         onChange={(e) => setWeight(+e.target.value)}
                         min={1}
                         max={500}
-                        className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all placeholder:text-slate-500"
                         data-ocid="gold_loan.weight_form.input"
                       />
                     </div>
                     <div>
-                      <p className="text-xs text-slate-400 uppercase tracking-wider block mb-2">
+                      <p className="text-xs text-amber-400/70 uppercase tracking-wider block mb-2 font-bold">
                         Gold Purity
                       </p>
                       <div className="flex gap-2">
@@ -886,8 +1009,8 @@ export default function GoldLoan() {
                             onClick={() => setPurity(p)}
                             className={`flex-1 py-3 rounded-xl text-sm font-bold border transition-all ${
                               purity === p
-                                ? "bg-yellow-400 border-yellow-400 text-slate-900"
-                                : "border-slate-200 text-slate-500 hover:border-yellow-300"
+                                ? "bg-gradient-to-r from-amber-400 to-yellow-300 border-amber-400 text-slate-900 shadow-lg shadow-amber-500/30"
+                                : "bg-slate-800/80 border-slate-600 text-slate-400 hover:border-amber-400/60"
                             }`}
                           >
                             {p}
@@ -897,18 +1020,18 @@ export default function GoldLoan() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4">
-                    <p className="text-xs text-yellow-600 uppercase tracking-wider mb-1">
+                    <p className="text-xs text-amber-400/80 uppercase tracking-wider mb-1 font-bold">
                       Estimated Gold Value
                     </p>
-                    <p className="text-3xl font-black text-yellow-700">
+                    <p className="text-3xl font-black text-amber-300">
                       ₹{estimatedValue.toLocaleString("en-IN")}
                     </p>
-                    <p className="text-xs text-yellow-500 mt-1">
+                    <p className="text-xs text-amber-500/70 mt-1">
                       Based on ₹13,315/g for 22K · {weight}g at {purity}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider block mb-2">
+                    <p className="text-xs text-amber-400/70 uppercase tracking-wider block mb-2 font-bold">
                       Items to Pledge
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -919,8 +1042,8 @@ export default function GoldLoan() {
                           onClick={() => toggleItem(item)}
                           className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
                             items.includes(item)
-                              ? "bg-indigo-600 text-white border-indigo-600"
-                              : "border-slate-200 text-slate-600 hover:border-indigo-300"
+                              ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-900 border-amber-400 shadow-md shadow-amber-500/25"
+                              : "bg-slate-800/60 border-slate-600 text-slate-400 hover:border-amber-400/60"
                           }`}
                         >
                           {item}
@@ -933,7 +1056,14 @@ export default function GoldLoan() {
 
               {step === 1 && (
                 <div className="space-y-5">
-                  <h3 className="text-lg font-bold text-slate-800">
+                  <h3
+                    className="text-lg font-black"
+                    style={{
+                      background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
                     Loan Details
                   </h3>
                   <div>
@@ -952,9 +1082,9 @@ export default function GoldLoan() {
                       step={5000}
                       value={currentLoan}
                       onChange={(e) => setLoanAmt(+e.target.value)}
-                      className="w-full accent-indigo-600"
+                      className="w-full accent-amber-400"
                     />
-                    <div className="flex justify-between text-xs text-slate-400 mt-1">
+                    <div className="flex justify-between text-xs text-slate-500 mt-1">
                       <span>₹50,000</span>
                       <span>Max: ₹5,00,000</span>
                     </div>
@@ -979,13 +1109,13 @@ export default function GoldLoan() {
                     />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider block mb-2">
+                    <p className="text-xs text-amber-400/70 uppercase tracking-wider block mb-2 font-bold">
                       Loan Purpose
                     </p>
                     <select
                       value={purpose}
                       onChange={(e) => setPurpose(e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-3 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400"
                     >
                       {[
                         "Medical",
@@ -998,14 +1128,14 @@ export default function GoldLoan() {
                       ))}
                     </select>
                   </div>
-                  <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
-                    <p className="text-xs text-indigo-500 uppercase tracking-wider mb-2">
+                  <div className="bg-amber-950/40 border border-amber-500/30 rounded-xl p-4">
+                    <p className="text-xs text-amber-400/80 uppercase tracking-wider mb-2 font-bold">
                       Estimated Monthly Interest
                     </p>
-                    <p className="text-2xl font-black text-indigo-700">
+                    <p className="text-2xl font-black text-amber-300">
                       ₹{Math.round(emi).toLocaleString("en-IN")}
                     </p>
-                    <p className="text-xs text-indigo-400">
+                    <p className="text-xs text-amber-500/70">
                       At 1% per month (reducing balance)
                     </p>
                   </div>
@@ -1014,7 +1144,14 @@ export default function GoldLoan() {
 
               {step === 2 && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-slate-800">
+                  <h3
+                    className="text-lg font-black"
+                    style={{
+                      background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
                     Personal Information
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1027,13 +1164,13 @@ export default function GoldLoan() {
                       { label: "Pincode", value: pincode, set: setPincode },
                     ].map((f) => (
                       <div key={f.label}>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider block mb-1">
+                        <p className="text-xs text-amber-400/70 uppercase tracking-wider block mb-1 font-bold">
                           {f.label}
                         </p>
                         <input
                           value={f.value}
                           onChange={(e) => f.set(e.target.value)}
-                          className="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-4 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-amber-400/40 focus:border-amber-400 transition-all"
                         />
                       </div>
                     ))}
@@ -1043,7 +1180,14 @@ export default function GoldLoan() {
 
               {step === 3 && (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold text-slate-800">
+                  <h3
+                    className="text-lg font-black"
+                    style={{
+                      background: "linear-gradient(135deg, #fbbf24, #f59e0b)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
                     Review Your Application
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1068,12 +1212,12 @@ export default function GoldLoan() {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="bg-slate-50 rounded-xl p-3"
+                        className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-3"
                       >
-                        <p className="text-[10px] text-slate-400 uppercase">
+                        <p className="text-[10px] text-amber-400/70 uppercase font-bold">
                           {item.label}
                         </p>
-                        <p className="font-bold text-slate-800 text-sm mt-0.5">
+                        <p className="font-bold text-white text-sm mt-0.5">
                           {item.value}
                         </p>
                       </div>
@@ -1089,7 +1233,7 @@ export default function GoldLoan() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setStep(step - 1)}
-                className="px-6 py-3 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                className="px-6 py-3 border border-amber-500/40 rounded-xl text-sm font-semibold text-amber-400 hover:bg-amber-500/10 transition-all"
                 data-ocid="gold_loan.back.button"
               >
                 ← Back
@@ -1104,7 +1248,7 @@ export default function GoldLoan() {
                 if (step < 3) setStep(step + 1);
                 else setSubmitted(true);
               }}
-              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-bold px-8 py-3 rounded-xl text-sm shadow-lg shadow-orange-500/25 transition-all"
+              className="relative overflow-hidden bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-900 font-black px-8 py-3 rounded-xl text-sm shadow-xl shadow-amber-500/30 transition-all"
               data-ocid="gold_loan.continue.button"
             >
               {step < 3 ? "Continue →" : "Submit Application 💛"}

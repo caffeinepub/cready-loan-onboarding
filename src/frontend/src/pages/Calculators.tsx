@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 
 const ifscDB: Record<
@@ -42,99 +41,191 @@ const ifscDB: Record<
 const tabs = ["EMI Calculator", "Eligibility", "IFSC Finder"] as const;
 type Tab = (typeof tabs)[number];
 
-function EMIDonutChart({
+function VerticalBarChart({
   principal,
   interest,
   emi,
 }: { principal: number; interest: number; emi: number }) {
-  const r = 60;
-  const sw = 18;
-  const circ = 2 * Math.PI * r;
   const total = principal + interest;
-  const principalRatio = total > 0 ? principal / total : 0.7;
-  const principalDash = circ * principalRatio;
-  const interestDash = circ * (1 - principalRatio);
+  const principalPct = total > 0 ? (principal / total) * 100 : 60;
+  const interestPct = total > 0 ? (interest / total) * 100 : 40;
+  const maxBarH = 180;
+  const principalH = Math.round((principalPct / 100) * maxBarH);
+  const interestH = Math.round((interestPct / 100) * maxBarH);
 
-  const prevEmiRef = useRef(emi);
-  const [animatedEmi, setAnimatedEmi] = useState(emi);
-
-  useEffect(() => {
-    const start = prevEmiRef.current;
-    const end = emi;
-    const duration = 500;
-    const startTime = Date.now();
-    const frame = () => {
-      const elapsed = Date.now() - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-      setAnimatedEmi(Math.round(start + (end - start) * eased));
-      if (t < 1) requestAnimationFrame(frame);
-      else prevEmiRef.current = end;
-    };
-    requestAnimationFrame(frame);
-  }, [emi]);
+  // 6-bar amortization preview (all equal = emi)
 
   return (
-    <div
-      className="relative flex items-center justify-center"
-      style={{ width: 180, height: 180 }}
-    >
-      <svg
-        aria-hidden="true"
-        width="180"
-        height="180"
-        viewBox="0 0 160 160"
-        className="-rotate-90"
+    <div className="w-full">
+      {/* Label */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-1.5">
+          <motion.div
+            className="w-2 h-2 rounded-full bg-indigo-500"
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
+          />
+          <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+            EMI Breakdown
+          </span>
+        </div>
+      </div>
+
+      {/* Main bars */}
+      <div
+        className="flex items-end justify-center gap-6 mb-5"
+        style={{ height: maxBarH + 60 }}
       >
-        <circle
-          cx="80"
-          cy="80"
-          r={r}
-          fill="none"
-          stroke="#f1f5f9"
-          strokeWidth={sw}
-        />
-        <motion.circle
-          cx="80"
-          cy="80"
-          r={r}
-          fill="none"
-          stroke="#f59e0b"
-          strokeWidth={sw}
-          strokeLinecap="butt"
-          strokeDasharray={circ}
-          initial={{ strokeDashoffset: 0 }}
-          animate={{ strokeDashoffset: circ - interestDash }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-        <motion.circle
-          cx="80"
-          cy="80"
-          r={r}
-          fill="none"
-          stroke="#4f46e5"
-          strokeWidth={sw}
-          strokeLinecap="butt"
-          strokeDasharray={circ}
-          initial={{ strokeDashoffset: circ }}
-          animate={{ strokeDashoffset: circ - principalDash }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-      </svg>
-      <div className="absolute text-center">
-        <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold leading-tight">
-          Monthly EMI
+        {/* Principal Bar */}
+        <div className="flex flex-col items-center gap-2">
+          <motion.div
+            className="text-xs font-black text-indigo-700"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            ₹{principal.toLocaleString("en-IN")}
+          </motion.div>
+          <div className="relative flex items-end" style={{ height: maxBarH }}>
+            <motion.div
+              className="w-16 rounded-t-xl relative overflow-hidden shadow-lg shadow-indigo-200"
+              style={{
+                background:
+                  "linear-gradient(180deg, #6366f1 0%, #4f46e5 50%, #3730a3 100%)",
+              }}
+              initial={{ height: 0 }}
+              animate={{ height: principalH }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+            >
+              {principalH > 50 && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <span className="text-white text-[10px] font-black rotate-0">
+                    {principalPct.toFixed(0)}%
+                  </span>
+                </motion.div>
+              )}
+              {/* shimmer */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                animate={{ x: [-64, 64] }}
+                transition={{
+                  repeat: Number.POSITIVE_INFINITY,
+                  duration: 2.5,
+                  ease: "linear",
+                  delay: 1,
+                }}
+                style={{ width: "200%" }}
+              />
+            </motion.div>
+          </div>
+          <span className="text-[11px] font-bold text-slate-600">
+            Principal
+          </span>
         </div>
-        <div className="text-xl font-black text-slate-800 leading-tight">
-          ₹{animatedEmi.toLocaleString("en-IN")}
+
+        {/* Interest Bar */}
+        <div className="flex flex-col items-center gap-2">
+          <motion.div
+            className="text-xs font-black text-amber-600"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            ₹{interest.toLocaleString("en-IN")}
+          </motion.div>
+          <div className="relative flex items-end" style={{ height: maxBarH }}>
+            <motion.div
+              className="w-16 rounded-t-xl relative overflow-hidden shadow-lg shadow-amber-200"
+              style={{
+                background:
+                  "linear-gradient(180deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)",
+              }}
+              initial={{ height: 0 }}
+              animate={{ height: interestH }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+            >
+              {interestH > 50 && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <span className="text-white text-[10px] font-black">
+                    {interestPct.toFixed(0)}%
+                  </span>
+                </motion.div>
+              )}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                animate={{ x: [-64, 64] }}
+                transition={{
+                  repeat: Number.POSITIVE_INFINITY,
+                  duration: 2.5,
+                  ease: "linear",
+                  delay: 1.3,
+                }}
+                style={{ width: "200%" }}
+              />
+            </motion.div>
+          </div>
+          <span className="text-[11px] font-bold text-slate-600">Interest</span>
         </div>
+      </div>
+
+      {/* Total Payment highlight card */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl px-4 py-3 flex justify-between items-center mb-5"
+      >
+        <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+          Total Payment
+        </span>
+        <span className="text-base font-black text-white">
+          ₹{(principal + interest).toLocaleString("en-IN")}
+        </span>
+      </motion.div>
+
+      {/* Monthly EMI Preview mini bars */}
+      <div>
+        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest mb-2">
+          Monthly EMI Preview
+        </p>
+        <div className="flex items-end gap-1 h-10">
+          {["a", "b", "c", "d", "e", "f"].map((id, i) => (
+            <motion.div
+              key={id}
+              className="flex-1 rounded-t-sm"
+              style={{
+                background: "linear-gradient(180deg, #818cf8 0%, #6366f1 100%)",
+                opacity: 0.5 + i * 0.08,
+              }}
+              initial={{ height: 0 }}
+              animate={{ height: "100%" }}
+              transition={{
+                duration: 0.4,
+                delay: 0.9 + i * 0.07,
+                ease: "easeOut",
+              }}
+            />
+          ))}
+        </div>
+        <p className="text-[10px] text-slate-400 mt-1 text-center">
+          ₹{emi.toLocaleString("en-IN")} × {6} months shown
+        </p>
       </div>
     </div>
   );
 }
 
 function EMICalc() {
-  const navigate = useNavigate();
   const [loan, setLoan] = useState(500000);
   const [tenure, setTenure] = useState(24);
   const [rate, setRate] = useState(10.99);
@@ -316,31 +407,21 @@ function EMICalc() {
 
         {/* Right: Donut + Results */}
         <div className="col-span-2 flex flex-col items-center">
-          <EMIDonutChart
+          {/* Bar Chart */}
+          <VerticalBarChart
             principal={loan}
             interest={Math.round(totalInterest)}
             emi={Math.round(emi)}
           />
 
-          {/* Legend */}
-          <div className="flex gap-5 mt-3 mb-5">
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-indigo-600" />
-              <span className="text-[11px] text-slate-500 font-semibold">
-                Principal
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-amber-500" />
-              <span className="text-[11px] text-slate-500 font-semibold">
-                Interest
-              </span>
-            </div>
-          </div>
-
           {/* Result breakdown */}
-          <div className="w-full space-y-2.5">
-            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl px-4 py-3">
+          <motion.div
+            className="w-full space-y-2.5 mt-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl px-4 py-3 shadow-lg shadow-indigo-200">
               <p className="text-[10px] text-indigo-200 uppercase font-semibold mb-0.5">
                 Monthly EMI
               </p>
@@ -353,39 +434,27 @@ function EMICalc() {
                 ₹{Math.round(emi).toLocaleString("en-IN")}
               </motion.p>
             </div>
-            <div className="bg-slate-50 rounded-xl px-4 py-2.5 flex justify-between">
+            <motion.div
+              className="bg-gradient-to-r from-slate-50 to-indigo-50/50 rounded-xl px-4 py-2.5 flex justify-between border border-indigo-50"
+              whileHover={{ scale: 1.01 }}
+            >
               <span className="text-xs text-slate-500">Principal Amount</span>
-              <span className="text-sm font-bold text-slate-800">
+              <span className="text-sm font-bold text-indigo-700">
                 ₹{loan.toLocaleString("en-IN")}
               </span>
-            </div>
-            <div className="bg-slate-50 rounded-xl px-4 py-2.5 flex justify-between">
+            </motion.div>
+            <motion.div
+              className="bg-gradient-to-r from-slate-50 to-amber-50/50 rounded-xl px-4 py-2.5 flex justify-between border border-amber-50"
+              whileHover={{ scale: 1.01 }}
+            >
               <span className="text-xs text-slate-500">
                 Total Interest Payable
               </span>
               <span className="text-sm font-bold text-amber-600">
                 ₹{Math.round(totalInterest).toLocaleString("en-IN")}
               </span>
-            </div>
-            <div className="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-2.5 flex justify-between">
-              <span className="text-xs font-semibold text-indigo-700">
-                Total Amount Payable
-              </span>
-              <span className="text-sm font-black text-indigo-800">
-                ₹{Math.round(totalAmt).toLocaleString("en-IN")}
-              </span>
-            </div>
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/my-offers")}
-            data-ocid="calculators.emi_eligibility.button"
-            className="w-full mt-4 bg-gradient-to-r from-teal-500 to-indigo-600 text-white font-bold py-3 rounded-xl shadow-lg text-sm"
-          >
-            Check Your Eligibility →
-          </motion.button>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 

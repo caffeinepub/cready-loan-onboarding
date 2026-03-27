@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "motion/react";
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   BrowserRouter,
@@ -50,39 +49,24 @@ export function useApp() {
 }
 
 function AnimatedRoutes() {
-  const location = useLocation();
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0, x: 60 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -60 }}
-        transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-        style={{ width: "100%", minHeight: "100vh" }}
-      >
-        <Routes>
-          <Route path="/" element={<Navigate to="/register" replace />} />
-          <Route path="/register" element={<Step1Registration />} />
-          <Route path="/otp" element={<Step2OTP />} />
-          <Route path="/analyzing" element={<Step3Analyzing />} />
-          <Route path="/dashboard" element={<Step4Dashboard />} />
-          <Route
-            path="/offers"
-            element={<Navigate to="/my-offers" replace />}
-          />
-          <Route path="/review" element={<Step6Review />} />
-          <Route path="/success" element={<Step7ThankYou />} />
-          <Route path="/my-offers" element={<MyOffers />} />
-          <Route path="/credit-report" element={<CreditReport />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/calculators" element={<Calculators />} />
-          <Route path="/ifsc-finder" element={<IFSCFinder />} />
-          <Route path="/support" element={<Support />} />
-          <Route path="/gold-loan" element={<GoldLoan />} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+    <Routes>
+      <Route path="/" element={<Navigate to="/register" replace />} />
+      <Route path="/register" element={<Step1Registration />} />
+      <Route path="/otp" element={<Step2OTP />} />
+      <Route path="/analyzing" element={<Step3Analyzing />} />
+      <Route path="/dashboard" element={<Step4Dashboard />} />
+      <Route path="/offers" element={<Navigate to="/my-offers" replace />} />
+      <Route path="/review" element={<Step6Review />} />
+      <Route path="/success" element={<Step7ThankYou />} />
+      <Route path="/my-offers" element={<MyOffers />} />
+      <Route path="/credit-report" element={<CreditReport />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/calculators" element={<Calculators />} />
+      <Route path="/ifsc-finder" element={<IFSCFinder />} />
+      <Route path="/support" element={<Support />} />
+      <Route path="/gold-loan" element={<GoldLoan />} />
+    </Routes>
   );
 }
 

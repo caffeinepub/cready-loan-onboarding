@@ -57,85 +57,134 @@ function CreditScoreDonut({ score }: { score: number }) {
   );
 }
 
-function EMIDonutChart({
+function VerticalBarChart({
   principal,
   interest,
-  emi,
+  emi: _emi,
 }: { principal: number; interest: number; emi: number }) {
-  const r = 60;
-  const sw = 18;
-  const circ = 2 * Math.PI * r;
   const total = principal + interest;
-  const principalRatio = total > 0 ? principal / total : 0.7;
-  const principalDash = circ * principalRatio;
-  const interestDash = circ * (1 - principalRatio);
-
-  const prevEmiRef = useRef(emi);
-  const [animatedEmi, setAnimatedEmi] = useState(emi);
-
-  useEffect(() => {
-    const start = prevEmiRef.current;
-    const end = emi;
-    const duration = 600;
-    const startTime = Date.now();
-    const frame = () => {
-      const elapsed = Date.now() - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-      setAnimatedEmi(Math.round(start + (end - start) * eased));
-      if (t < 1) requestAnimationFrame(frame);
-      else prevEmiRef.current = end;
-    };
-    requestAnimationFrame(frame);
-  }, [emi]);
+  const principalPct = total > 0 ? (principal / total) * 100 : 60;
+  const interestPct = total > 0 ? (interest / total) * 100 : 40;
+  const maxBarH = 180;
+  const principalH = Math.round((principalPct / 100) * maxBarH);
+  const interestH = Math.round((interestPct / 100) * maxBarH);
 
   return (
-    <div className="relative flex items-center justify-center w-full h-auto max-w-[160px] mx-auto">
-      <svg aria-hidden="true" viewBox="0 0 160 160" className="-rotate-90">
-        {/* Track */}
-        <circle
-          cx="80"
-          cy="80"
-          r={r}
-          fill="none"
-          stroke="#f1f5f9"
-          strokeWidth={sw}
-        />
-        {/* Interest arc (amber) — drawn first as background */}
-        <motion.circle
-          cx="80"
-          cy="80"
-          r={r}
-          fill="none"
-          stroke="#f59e0b"
-          strokeWidth={sw}
-          strokeLinecap="butt"
-          strokeDasharray={circ}
-          initial={{ strokeDashoffset: 0 }}
-          animate={{ strokeDashoffset: circ - interestDash }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-        {/* Principal arc (indigo) — drawn on top, covers from start */}
-        <motion.circle
-          cx="80"
-          cy="80"
-          r={r}
-          fill="none"
-          stroke="#4f46e5"
-          strokeWidth={sw}
-          strokeLinecap="butt"
-          strokeDasharray={circ}
-          initial={{ strokeDashoffset: circ }}
-          animate={{ strokeDashoffset: circ - principalDash }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-      </svg>
-      <div className="absolute text-center">
-        <div className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">
-          Monthly
+    <div className="w-full">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-1.5">
+          <motion.div
+            className="w-2 h-2 rounded-full bg-indigo-500"
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2 }}
+          />
+          <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest">
+            EMI Breakdown
+          </span>
         </div>
-        <div className="text-lg font-black text-slate-800 leading-tight">
-          ₹{animatedEmi.toLocaleString("en-IN")}
+      </div>
+      <div
+        className="flex items-end justify-center gap-6 mb-5"
+        style={{ height: maxBarH + 60 }}
+      >
+        {/* Principal Bar */}
+        <div className="flex flex-col items-center gap-2">
+          <motion.div
+            className="text-xs font-black text-indigo-700"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            ₹{principal.toLocaleString("en-IN")}
+          </motion.div>
+          <div className="relative flex items-end" style={{ height: maxBarH }}>
+            <motion.div
+              className="w-16 rounded-t-xl relative overflow-hidden shadow-lg shadow-indigo-200"
+              style={{
+                background:
+                  "linear-gradient(180deg, #6366f1 0%, #4f46e5 50%, #3730a3 100%)",
+              }}
+              initial={{ height: 0 }}
+              animate={{ height: principalH }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.2 }}
+            >
+              {principalH > 50 && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <span className="text-white text-[10px] font-black">
+                    {principalPct.toFixed(0)}%
+                  </span>
+                </motion.div>
+              )}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                animate={{ x: [-64, 64] }}
+                transition={{
+                  repeat: Number.POSITIVE_INFINITY,
+                  duration: 2.5,
+                  ease: "linear",
+                  delay: 1,
+                }}
+                style={{ width: "200%" }}
+              />
+            </motion.div>
+          </div>
+          <span className="text-[11px] font-bold text-slate-600">
+            Principal
+          </span>
+        </div>
+
+        {/* Interest Bar */}
+        <div className="flex flex-col items-center gap-2">
+          <motion.div
+            className="text-xs font-black text-amber-600"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            ₹{interest.toLocaleString("en-IN")}
+          </motion.div>
+          <div className="relative flex items-end" style={{ height: maxBarH }}>
+            <motion.div
+              className="w-16 rounded-t-xl relative overflow-hidden shadow-lg shadow-amber-200"
+              style={{
+                background:
+                  "linear-gradient(180deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%)",
+              }}
+              initial={{ height: 0 }}
+              animate={{ height: interestH }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.35 }}
+            >
+              {interestH > 50 && (
+                <motion.div
+                  className="absolute inset-0 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.9 }}
+                >
+                  <span className="text-white text-[10px] font-black">
+                    {interestPct.toFixed(0)}%
+                  </span>
+                </motion.div>
+              )}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                animate={{ x: [-64, 64] }}
+                transition={{
+                  repeat: Number.POSITIVE_INFINITY,
+                  duration: 2.5,
+                  ease: "linear",
+                  delay: 1.3,
+                }}
+                style={{ width: "200%" }}
+              />
+            </motion.div>
+          </div>
+          <span className="text-[11px] font-bold text-slate-600">Interest</span>
         </div>
       </div>
     </div>
@@ -224,6 +273,7 @@ export default function Step4Dashboard() {
   const [tenure, setTenure] = useState(24);
   const [rate, setRate] = useState(10.99);
   const [toastVisible, setToastVisible] = useState(true);
+  const [showAmortization, setShowAmortization] = useState(false);
   const [selectedFDCardIdx, setSelectedFDCardIdx] = useState<number | null>(
     null,
   );
@@ -236,6 +286,41 @@ export default function Step4Dashboard() {
       : loanAmt / tenure;
   const totalAmt = emi * tenure;
   const totalInterest = totalAmt - loanAmt;
+  // Amortization schedule (year-by-year, up to 5 years)
+  const amortization = (() => {
+    const rows: {
+      year: number;
+      opening: number;
+      emiPaid: number;
+      principalPaid: number;
+      interestPaid: number;
+      closing: number;
+    }[] = [];
+    let balance = loanAmt;
+    const years = Math.min(5, Math.ceil(tenure / 12));
+    for (let y = 1; y <= years; y++) {
+      const monthsInYear = Math.min(12, tenure - (y - 1) * 12);
+      let principalPaid = 0;
+      let interestPaid = 0;
+      const opening = balance;
+      for (let m = 0; m < monthsInYear; m++) {
+        const intForMonth = balance * monthly;
+        const principalForMonth = emi - intForMonth;
+        interestPaid += intForMonth;
+        principalPaid += principalForMonth;
+        balance = Math.max(0, balance - principalForMonth);
+      }
+      rows.push({
+        year: y,
+        opening: Math.round(opening),
+        emiPaid: Math.round(emi * monthsInYear),
+        principalPaid: Math.round(principalPaid),
+        interestPaid: Math.round(interestPaid),
+        closing: Math.round(balance),
+      });
+    }
+    return rows;
+  })();
 
   useEffect(() => {
     const t = setTimeout(() => setToastVisible(false), 3500);
@@ -249,8 +334,7 @@ export default function Step4Dashboard() {
         <div className="flex items-start justify-between flex-wrap gap-2 mb-6">
           <div>
             <h1 className="text-3xl font-black text-slate-800">
-              Welcome back,{" "}
-              <span className="text-indigo-500">{name || "Bharat"}!</span>
+              Hey, {name || "Bharat"} 👋
             </h1>
             <p className="text-slate-500 mt-1">
               Your personalized loan offers are ready.
@@ -715,27 +799,11 @@ export default function Step4Dashboard() {
 
             {/* Right: Donut + Results */}
             <div className="col-span-2 flex flex-col items-center">
-              <EMIDonutChart
+              <VerticalBarChart
                 principal={loanAmt}
                 interest={Math.round(totalInterest)}
                 emi={Math.round(emi)}
               />
-
-              {/* Legend */}
-              <div className="flex gap-4 mt-3 mb-5">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-indigo-600" />
-                  <span className="text-[10px] text-slate-500 font-semibold">
-                    Principal
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-[10px] text-slate-500 font-semibold">
-                    Interest
-                  </span>
-                </div>
-              </div>
 
               {/* Result rows */}
               <div className="w-full space-y-2.5">
@@ -785,6 +853,100 @@ export default function Step4Dashboard() {
               >
                 Apply Now →
               </motion.button>
+
+              {/* Amortization Schedule */}
+              <div className="mt-6 border-t border-slate-100 pt-5">
+                <button
+                  type="button"
+                  onClick={() => setShowAmortization(!showAmortization)}
+                  data-ocid="dashboard.amortization.toggle"
+                  className="flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
+                >
+                  <motion.span
+                    animate={{ rotate: showAmortization ? 90 : 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="inline-block"
+                  >
+                    ▶
+                  </motion.span>
+                  View Year-by-Year Breakdown
+                </button>
+
+                <AnimatePresence>
+                  {showAmortization && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden mt-4"
+                      data-ocid="dashboard.amortization.panel"
+                    >
+                      <div className="overflow-x-auto rounded-xl border border-slate-100">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-indigo-600 text-white">
+                              <th className="px-3 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider">
+                                Year
+                              </th>
+                              <th className="px-3 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider">
+                                Opening
+                              </th>
+                              <th className="px-3 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider">
+                                EMI Paid
+                              </th>
+                              <th className="px-3 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider">
+                                Principal
+                              </th>
+                              <th className="px-3 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider">
+                                Interest
+                              </th>
+                              <th className="px-3 py-2.5 text-right text-[10px] font-bold uppercase tracking-wider">
+                                Closing
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {amortization.map((row, i) => (
+                              <motion.tr
+                                key={row.year}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.06 }}
+                                className={
+                                  i % 2 === 0 ? "bg-white" : "bg-slate-50"
+                                }
+                                data-ocid={`dashboard.amortization.row.${i + 1}`}
+                              >
+                                <td className="px-3 py-2.5 font-bold text-indigo-600">
+                                  Year {row.year}
+                                </td>
+                                <td className="px-3 py-2.5 text-right text-slate-700">
+                                  ₹{row.opening.toLocaleString("en-IN")}
+                                </td>
+                                <td className="px-3 py-2.5 text-right text-slate-700">
+                                  ₹{row.emiPaid.toLocaleString("en-IN")}
+                                </td>
+                                <td className="px-3 py-2.5 text-right text-indigo-600 font-semibold">
+                                  ₹{row.principalPaid.toLocaleString("en-IN")}
+                                </td>
+                                <td className="px-3 py-2.5 text-right text-amber-600 font-semibold">
+                                  ₹{row.interestPaid.toLocaleString("en-IN")}
+                                </td>
+                                <td className="px-3 py-2.5 text-right font-bold text-slate-800">
+                                  ₹{row.closing.toLocaleString("en-IN")}
+                                </td>
+                              </motion.tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-2 text-right">
+                        * Showing up to 5 years
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
