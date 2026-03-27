@@ -400,7 +400,7 @@ export default function Step4Dashboard() {
                   <motion.button
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.96 }}
-                    onClick={() => navigate("/my-offers")}
+                    onClick={() => navigate("/review")}
                     data-ocid={`dashboard.offer_apply.${i + 1}`}
                     className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-bold py-2 rounded-xl border border-white/30 transition-colors"
                   >
