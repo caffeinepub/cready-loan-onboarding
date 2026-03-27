@@ -96,7 +96,7 @@ export default function Step7ThankYou() {
             initial={{ y: 100, opacity: 0, scale: 0.8 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            className="fixed bottom-32 left-1/2 -translate-x-1/2 z-20 text-center"
+            className="fixed top-20 left-4 z-20 text-left"
           >
             <div className="relative inline-block">
               {/* Radial glow */}
@@ -105,13 +105,14 @@ export default function Step7ThankYou() {
                 transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
                 className="absolute inset-0 rounded-2xl bg-amber-400 blur-xl"
               />
-              <div className="relative bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl px-6 py-4 shadow-2xl border border-amber-300/50">
+              <div className="relative bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl px-4 py-3 shadow-2xl border border-amber-300/50">
                 <div className="text-3xl mb-1">🏆</div>
                 <p className="text-white font-black text-base">
-                  Loan Hero Badge Unlocked!
+                  🎁 Refer & Earn!
                 </p>
                 <p className="text-amber-100 text-xs mt-1">
-                  You're in the top 5% of approved applicants this week
+                  Refer friends & family to Cready and unlock up to ₹1000 Amazon
+                  vouchers!
                 </p>
                 <div className="flex items-center justify-between mt-3">
                   <button

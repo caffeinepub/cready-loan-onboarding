@@ -21,7 +21,7 @@ const kycItems = [
 
 export default function Profile() {
   const [editing, setEditing] = useState(false);
-  const [name, setName] = useState("Bharat Sharma");
+  const [name, setName] = useState("Bharat Bhushan");
   const [email, setEmail] = useState("bharat.sharma@gmail.com");
   const [mobile, setMobile] = useState("+91 98765 43210");
   const [address, setAddress] = useState("42, MG Road, Bengaluru, KA 560001");

@@ -700,7 +700,7 @@ export default function GoldLoan() {
   const [loanAmt, setLoanAmt] = useState(500000);
   const [tenure, setTenure] = useState(12);
   const [purpose, setPurpose] = useState("Personal");
-  const [fullName, setFullName] = useState("Bharat Sharma");
+  const [fullName, setFullName] = useState("Bharat Bhushan");
   const [mobile, setMobile] = useState("+91 98765 43210");
   const [address, setAddress] = useState("42, MG Road");
   const [city, setCity] = useState("Bengaluru");

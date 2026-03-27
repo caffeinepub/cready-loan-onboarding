@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../App";
 import DashboardLayout from "../components/DashboardLayout";
@@ -55,6 +55,100 @@ function CreditScoreDonut({ score }: { score: number }) {
         <div className="text-4xl font-black text-slate-800">{score}</div>
         <div className="text-[9px] text-slate-400 tracking-widest uppercase">
           Equifax Score
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EMIDonutChart({
+  principal,
+  interest,
+  emi,
+}: { principal: number; interest: number; emi: number }) {
+  const r = 60;
+  const sw = 18;
+  const circ = 2 * Math.PI * r;
+  const total = principal + interest;
+  const principalRatio = total > 0 ? principal / total : 0.7;
+  const principalDash = circ * principalRatio;
+  const interestDash = circ * (1 - principalRatio);
+
+  const prevEmiRef = useRef(emi);
+  const [animatedEmi, setAnimatedEmi] = useState(emi);
+
+  useEffect(() => {
+    const start = prevEmiRef.current;
+    const end = emi;
+    const duration = 600;
+    const startTime = Date.now();
+    const frame = () => {
+      const elapsed = Date.now() - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      setAnimatedEmi(Math.round(start + (end - start) * eased));
+      if (t < 1) requestAnimationFrame(frame);
+      else prevEmiRef.current = end;
+    };
+    requestAnimationFrame(frame);
+  }, [emi]);
+
+  return (
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: 160, height: 160 }}
+    >
+      <svg
+        aria-hidden="true"
+        width="160"
+        height="160"
+        viewBox="0 0 160 160"
+        className="-rotate-90"
+      >
+        {/* Track */}
+        <circle
+          cx="80"
+          cy="80"
+          r={r}
+          fill="none"
+          stroke="#f1f5f9"
+          strokeWidth={sw}
+        />
+        {/* Interest arc (amber) — drawn first as background */}
+        <motion.circle
+          cx="80"
+          cy="80"
+          r={r}
+          fill="none"
+          stroke="#f59e0b"
+          strokeWidth={sw}
+          strokeLinecap="butt"
+          strokeDasharray={circ}
+          initial={{ strokeDashoffset: 0 }}
+          animate={{ strokeDashoffset: circ - interestDash }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
+        {/* Principal arc (indigo) — drawn on top, covers from start */}
+        <motion.circle
+          cx="80"
+          cy="80"
+          r={r}
+          fill="none"
+          stroke="#4f46e5"
+          strokeWidth={sw}
+          strokeLinecap="butt"
+          strokeDasharray={circ}
+          initial={{ strokeDashoffset: circ }}
+          animate={{ strokeDashoffset: circ - principalDash }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
+      </svg>
+      <div className="absolute text-center">
+        <div className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">
+          Monthly
+        </div>
+        <div className="text-lg font-black text-slate-800 leading-tight">
+          ₹{animatedEmi.toLocaleString("en-IN")}
         </div>
       </div>
     </div>
@@ -139,14 +233,22 @@ const fdCards = [
 export default function Step4Dashboard() {
   const navigate = useNavigate();
   const { name } = useApp();
-  const [loanAmt, setLoanAmt] = useState(211000);
-  const [tenure, setTenure] = useState(15);
+  const [loanAmt, setLoanAmt] = useState(500000);
+  const [tenure, setTenure] = useState(24);
+  const [rate, setRate] = useState(10.99);
   const [toastVisible, setToastVisible] = useState(true);
   const [selectedFDCardIdx, setSelectedFDCardIdx] = useState<number | null>(
     null,
   );
-  const emi = Math.round(((loanAmt * 0.075) / tenure) * 10) / 10;
-  const total = Math.round(emi * tenure);
+
+  const monthly = rate / 12 / 100;
+  const emi =
+    monthly > 0
+      ? (loanAmt * monthly * (1 + monthly) ** tenure) /
+        ((1 + monthly) ** tenure - 1)
+      : loanAmt / tenure;
+  const totalAmt = emi * tenure;
+  const totalInterest = totalAmt - loanAmt;
 
   useEffect(() => {
     const t = setTimeout(() => setToastVisible(false), 3500);
@@ -257,72 +359,190 @@ export default function Step4Dashboard() {
           </div>
         </div>
 
-        {/* Loan calculator */}
-        <div className="grid grid-cols-5 gap-4 mb-6">
-          <div className="col-span-3 bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">
-              Loan Amount
-            </p>
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-3xl font-black text-slate-800">
-                ₹ {loanAmt.toLocaleString("en-IN")}
-              </span>
-              <span className="bg-slate-100 text-slate-500 text-xs px-2 py-1 rounded-lg">
-                Max: ₹10L
-              </span>
+        {/* Premium EMI Calculator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-white rounded-2xl shadow-sm border border-slate-100 mb-6 overflow-hidden"
+          data-ocid="dashboard.emi_calculator.card"
+        >
+          {/* Header */}
+          <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4 flex items-center gap-3">
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-lg">
+              🧮
             </div>
-            <input
-              type="range"
-              min={50000}
-              max={1000000}
-              step={5000}
-              value={loanAmt}
-              onChange={(e) => setLoanAmt(+e.target.value)}
-              className="w-full accent-indigo-500 mb-5"
-            />
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">
-              Tenure (Months)
-            </p>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-3xl font-black text-slate-800">
-                {tenure} Months
-              </span>
-            </div>
-            <input
-              type="range"
-              min={3}
-              max={60}
-              step={1}
-              value={tenure}
-              onChange={(e) => setTenure(+e.target.value)}
-              className="w-full accent-indigo-500"
-            />
-          </div>
-          <div className="col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-slate-400">🧮</span>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                EMI Calculator
+            <div>
+              <h2 className="text-white font-bold text-base">
+                Personal Loan EMI Calculator
+              </h2>
+              <p className="text-indigo-200 text-xs">
+                Instant estimates · Based on IDFC FIRST Bank rates
               </p>
             </div>
-            <p className="text-xs text-slate-400 uppercase mb-1">
-              Estimated EMI
-            </p>
-            <p className="text-3xl font-black text-slate-800 mb-4">
-              ₹ {emi.toLocaleString("en-IN")}
-            </p>
-            <p className="text-xs text-slate-400 uppercase mb-1">
-              Interest Rate
-            </p>
-            <p className="text-lg font-bold text-slate-700 mb-3">7.5% p.a.</p>
-            <p className="text-xs text-slate-400 uppercase mb-1">
-              Total Repayment
-            </p>
-            <p className="text-lg font-bold text-slate-700">
-              ₹ {total.toLocaleString("en-IN")}
-            </p>
           </div>
-        </div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-5 gap-8">
+              {/* Left: Sliders */}
+              <div className="col-span-3 space-y-6">
+                {/* Loan Amount */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
+                      Loan Amount
+                    </span>
+                    <span className="text-xl font-black text-indigo-600">
+                      ₹{loanAmt.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={50000}
+                    max={4000000}
+                    step={10000}
+                    value={loanAmt}
+                    onChange={(e) => setLoanAmt(+e.target.value)}
+                    className="w-full accent-indigo-600 h-2 cursor-pointer"
+                    data-ocid="dashboard.loan_amount.input"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                    <span>₹50,000</span>
+                    <span>₹40,00,000</span>
+                  </div>
+                </div>
+
+                {/* Tenure */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
+                      Tenure
+                    </span>
+                    <span className="text-xl font-black text-indigo-600">
+                      {tenure} Months
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={12}
+                    max={60}
+                    step={1}
+                    value={tenure}
+                    onChange={(e) => setTenure(+e.target.value)}
+                    className="w-full accent-indigo-600 h-2 cursor-pointer"
+                    data-ocid="dashboard.tenure.input"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                    <span>12 Mo</span>
+                    <span>60 Mo</span>
+                  </div>
+                </div>
+
+                {/* Interest Rate */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
+                      Interest Rate
+                    </span>
+                    <span className="text-xl font-black text-indigo-600">
+                      {rate.toFixed(2)}% p.a.
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={9.99}
+                    max={36}
+                    step={0.01}
+                    value={rate}
+                    onChange={(e) => setRate(+e.target.value)}
+                    className="w-full accent-indigo-600 h-2 cursor-pointer"
+                    data-ocid="dashboard.interest_rate.input"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                    <span>9.99%</span>
+                    <span>36%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Donut + Results */}
+              <div className="col-span-2 flex flex-col items-center">
+                <EMIDonutChart
+                  principal={loanAmt}
+                  interest={Math.round(totalInterest)}
+                  emi={Math.round(emi)}
+                />
+
+                {/* Legend */}
+                <div className="flex gap-4 mt-3 mb-5">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-indigo-600" />
+                    <span className="text-[10px] text-slate-500 font-semibold">
+                      Principal
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                    <span className="text-[10px] text-slate-500 font-semibold">
+                      Interest
+                    </span>
+                  </div>
+                </div>
+
+                {/* Result rows */}
+                <div className="w-full space-y-2.5">
+                  <div className="bg-indigo-50 rounded-xl px-4 py-2.5">
+                    <p className="text-[10px] text-indigo-500 uppercase font-semibold mb-0.5">
+                      Monthly EMI
+                    </p>
+                    <motion.p
+                      key={Math.round(emi)}
+                      initial={{ scale: 0.85, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="text-2xl font-black text-indigo-700"
+                    >
+                      ₹{Math.round(emi).toLocaleString("en-IN")}
+                    </motion.p>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl px-4 py-2.5 flex justify-between items-center">
+                    <span className="text-xs text-slate-500">
+                      Principal Amount
+                    </span>
+                    <span className="text-sm font-bold text-slate-700">
+                      ₹{loanAmt.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl px-4 py-2.5 flex justify-between items-center">
+                    <span className="text-xs text-slate-500">
+                      Total Interest
+                    </span>
+                    <span className="text-sm font-bold text-amber-600">
+                      ₹{Math.round(totalInterest).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  <div className="bg-slate-50 rounded-xl px-4 py-2.5 flex justify-between items-center border-t-2 border-indigo-100">
+                    <span className="text-xs font-semibold text-slate-600">
+                      Total Amount
+                    </span>
+                    <span className="text-sm font-black text-slate-800">
+                      ₹{Math.round(totalAmt).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => navigate("/review")}
+                  data-ocid="dashboard.emi_calculator_apply.button"
+                  className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-500/30 text-sm transition-all hover:shadow-xl hover:shadow-indigo-500/40"
+                >
+                  Apply Now →
+                </motion.button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Recommended Offers */}
         <div className="mb-6">
@@ -363,10 +583,8 @@ export default function Step4Dashboard() {
                   style={{ scrollSnapAlign: "start" }}
                   data-ocid={`dashboard.offer.${i + 1}`}
                 >
-                  {/* Background blob */}
                   <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
                   <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
-
                   <div className="relative">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-2xl">{offer.icon}</span>
@@ -381,7 +599,6 @@ export default function Step4Dashboard() {
                     </p>
                     <p className="text-xs text-white/60 mb-3">{offer.type}</p>
                     <p className="text-2xl font-black mb-3">{offer.amount}</p>
-
                     <div className="grid grid-cols-2 gap-2 mb-3 text-[10px]">
                       <div>
                         <p className="text-white/60">Interest</p>
@@ -392,8 +609,6 @@ export default function Step4Dashboard() {
                         <p className="font-bold">{offer.processing}</p>
                       </div>
                     </div>
-
-                    {/* Approval bar */}
                     <div className="mb-3">
                       <div className="flex justify-between text-[10px] mb-1">
                         <span className="text-white/70">Approval Chance</span>
@@ -408,7 +623,6 @@ export default function Step4Dashboard() {
                         />
                       </div>
                     </div>
-
                     <motion.button
                       whileHover={{ scale: 1.04 }}
                       whileTap={{ scale: 0.96 }}
@@ -422,7 +636,6 @@ export default function Step4Dashboard() {
                 </motion.div>
               ))}
             </div>
-            {/* Dots indicator */}
             <div className="flex justify-center gap-1.5 mt-2">
               {recommendedOffers.map((offer) => (
                 <div
@@ -448,10 +661,8 @@ export default function Step4Dashboard() {
                 className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer`}
                 data-ocid={`dashboard.offer.${i + 1}`}
               >
-                {/* Background blob */}
                 <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
                 <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
-
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-2xl">{offer.icon}</span>
@@ -466,7 +677,6 @@ export default function Step4Dashboard() {
                   </p>
                   <p className="text-xs text-white/60 mb-3">{offer.type}</p>
                   <p className="text-2xl font-black mb-3">{offer.amount}</p>
-
                   <div className="grid grid-cols-2 gap-2 mb-3 text-[10px]">
                     <div>
                       <p className="text-white/60">Interest</p>
@@ -477,7 +687,6 @@ export default function Step4Dashboard() {
                       <p className="font-bold">{offer.processing}</p>
                     </div>
                   </div>
-
                   <div className="mb-3">
                     <div className="flex justify-between text-[10px] mb-1">
                       <span className="text-white/70">Approval Chance</span>
@@ -492,7 +701,6 @@ export default function Step4Dashboard() {
                       />
                     </div>
                   </div>
-
                   <motion.button
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.96 }}
@@ -547,10 +755,8 @@ export default function Step4Dashboard() {
                 className={`bg-gradient-to-br ${card.gradient} rounded-xl shadow-md p-4 relative overflow-hidden`}
                 data-ocid={`dashboard.fd_card.${i + 1}`}
               >
-                {/* Decorative blobs */}
                 <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-white/10" />
                 <div className="absolute -bottom-6 -left-2 w-14 h-14 rounded-full bg-white/5" />
-
                 <div className="relative">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xl">{card.logo}</span>
