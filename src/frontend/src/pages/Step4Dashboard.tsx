@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../App";
 import DashboardLayout from "../components/DashboardLayout";
+import FDEligibilityModal from "../components/FDEligibilityModal";
 
 function CreditScoreDonut({ score }: { score: number }) {
   const r = 70;
@@ -141,6 +142,9 @@ export default function Step4Dashboard() {
   const [loanAmt, setLoanAmt] = useState(211000);
   const [tenure, setTenure] = useState(15);
   const [toastVisible, setToastVisible] = useState(true);
+  const [selectedFDCardIdx, setSelectedFDCardIdx] = useState<number | null>(
+    null,
+  );
   const emi = Math.round(((loanAmt * 0.075) / tenure) * 10) / 10;
   const total = Math.round(emi * tenure);
 
@@ -337,13 +341,106 @@ export default function Step4Dashboard() {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Mobile swipe carousel */}
+          <div className="md:hidden">
+            <div
+              className="flex gap-4 overflow-x-auto pb-4"
+              style={{
+                scrollSnapType: "x mandatory",
+                WebkitOverflowScrolling: "touch",
+              }}
+            >
+              {recommendedOffers.map((offer, i) => (
+                <motion.div
+                  key={offer.bank}
+                  initial={{ x: -50, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.3, delay: i * 0.08 }}
+                  whileDrag={{ scale: 0.97, rotate: 1 }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer flex-shrink-0 w-[280px]`}
+                  style={{ scrollSnapAlign: "start" }}
+                  data-ocid={`dashboard.offer.${i + 1}`}
+                >
+                  {/* Background blob */}
+                  <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+                  <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
+
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-2xl">{offer.icon}</span>
+                      <span
+                        className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${offer.badgeColor}`}
+                      >
+                        {offer.badge}
+                      </span>
+                    </div>
+                    <p className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-0.5">
+                      {offer.bank}
+                    </p>
+                    <p className="text-xs text-white/60 mb-3">{offer.type}</p>
+                    <p className="text-2xl font-black mb-3">{offer.amount}</p>
+
+                    <div className="grid grid-cols-2 gap-2 mb-3 text-[10px]">
+                      <div>
+                        <p className="text-white/60">Interest</p>
+                        <p className="font-bold">{offer.rate}</p>
+                      </div>
+                      <div>
+                        <p className="text-white/60">Processing</p>
+                        <p className="font-bold">{offer.processing}</p>
+                      </div>
+                    </div>
+
+                    {/* Approval bar */}
+                    <div className="mb-3">
+                      <div className="flex justify-between text-[10px] mb-1">
+                        <span className="text-white/70">Approval Chance</span>
+                        <span className="font-bold">{offer.approval}%</span>
+                      </div>
+                      <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${offer.approval}%` }}
+                          transition={{ duration: 1, delay: 0.3 + i * 0.1 }}
+                          className="h-full bg-white rounded-full"
+                        />
+                      </div>
+                    </div>
+
+                    <motion.button
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => navigate("/review")}
+                      data-ocid={`dashboard.offer_apply.${i + 1}`}
+                      className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-bold py-2 rounded-xl border border-white/30 transition-colors"
+                    >
+                      Apply Now
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            {/* Dots indicator */}
+            <div className="flex justify-center gap-1.5 mt-2">
+              {recommendedOffers.map((offer) => (
+                <div
+                  key={offer.bank}
+                  className="w-1.5 h-1.5 rounded-full bg-slate-300"
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop grid */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4">
             {recommendedOffers.map((offer, i) => (
               <motion.div
                 key={offer.bank}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.1 }}
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, delay: i * 0.08 }}
                 whileHover={{
                   scale: 1.03,
                   boxShadow: "0 20px 40px -10px rgba(0,0,0,0.25)",
@@ -381,7 +478,6 @@ export default function Step4Dashboard() {
                     </div>
                   </div>
 
-                  {/* Approval bar */}
                   <div className="mb-3">
                     <div className="flex justify-between text-[10px] mb-1">
                       <span className="text-white/70">Approval Chance</span>
@@ -402,7 +498,7 @@ export default function Step4Dashboard() {
                     whileTap={{ scale: 0.96 }}
                     onClick={() => navigate("/review")}
                     data-ocid={`dashboard.offer_apply.${i + 1}`}
-                    className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-bold py-2 rounded-xl border border-white/30 transition-colors"
+                    className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-xs font-bold py-2 rounded-xl border border-white/30 transition-colors min-h-[44px]"
                   >
                     Apply Now
                   </motion.button>
@@ -470,6 +566,7 @@ export default function Step4Dashboard() {
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.96 }}
                     data-ocid={`dashboard.fd_card_eligibility.${i + 1}`}
+                    onClick={() => setSelectedFDCardIdx(i)}
                     className="w-full bg-white text-slate-800 text-xs font-bold py-1.5 rounded-lg hover:bg-white/90 transition-colors"
                   >
                     Check Eligibility
@@ -498,6 +595,26 @@ export default function Step4Dashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+      <FDEligibilityModal
+        open={selectedFDCardIdx !== null}
+        onClose={() => setSelectedFDCardIdx(null)}
+        card={
+          selectedFDCardIdx !== null
+            ? {
+                name: fdCards[selectedFDCardIdx].name,
+                bank: fdCards[selectedFDCardIdx].name.includes("SBM")
+                  ? "SBM Bank"
+                  : fdCards[selectedFDCardIdx].name.includes("HDFC")
+                    ? "HDFC Bank"
+                    : "IDFC FIRST Bank",
+                fdFrom: fdCards[selectedFDCardIdx].fd,
+                fee: fdCards[selectedFDCardIdx].fee,
+                logo: fdCards[selectedFDCardIdx].logo,
+                color: fdCards[selectedFDCardIdx].gradient,
+              }
+            : null
+        }
+      />
     </DashboardLayout>
   );
 }

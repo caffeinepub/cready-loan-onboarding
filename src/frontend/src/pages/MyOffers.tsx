@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
@@ -120,6 +120,52 @@ const unmatched = [
   { name: "South Indian Bank", reason: "Income threshold", icon: "🏛️" },
 ];
 
+const reasonTips: Record<string, string[]> = {
+  "Low income proof": [
+    "Upload salary slips for last 3 months",
+    "Add a co-applicant with stable income",
+    "Include rental or freelance income in your application",
+    "Ensure bank statement shows regular credits",
+  ],
+  "Serviceable area": [
+    "Lender is expanding — check back in 30 days",
+    "Try applying with a different residential address if applicable",
+    "Contact the lender directly for area exceptions",
+  ],
+  "Existing application": [
+    "Wait for your existing application to be processed or withdrawn",
+    "Check application status before applying again",
+    "Contact lender to withdraw duplicate application",
+  ],
+  "Eligibility criteria": [
+    "Maintain a credit score above 700",
+    "Reduce existing loan obligations",
+    "Ensure stable employment for 12+ months",
+    "Keep credit utilization below 30%",
+  ],
+  "Credit history": [
+    "Pay all EMIs and credit card bills on time",
+    "Avoid multiple loan applications in a short period",
+    "Build credit history with a secured credit card",
+    "Clear overdue amounts on existing accounts",
+  ],
+  "Income threshold": [
+    "Show additional income sources in your application",
+    "Apply for a smaller loan amount to meet income ratio",
+    "Add a co-applicant to boost combined income",
+  ],
+};
+
+const genericTips = [
+  "Maintain a CIBIL score above 700",
+  "Reduce existing EMI obligations",
+  "Keep credit utilization below 30%",
+  "Ensure stable employment for 12+ months",
+  "Avoid multiple loan applications simultaneously",
+];
+
+type UnmatchedLender = (typeof unmatched)[0];
+
 const filters = [
   "All",
   "Instant Disbursal",
@@ -128,9 +174,136 @@ const filters = [
   "Pre-Approved",
 ];
 
+function EligibilityModal({
+  lender,
+  onClose,
+}: {
+  lender: UnmatchedLender;
+  onClose: () => void;
+}) {
+  const tips = reasonTips[lender.reason] ?? genericTips;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        backdropFilter: "blur(8px)",
+        backgroundColor: "rgba(15,23,42,0.55)",
+      }}
+      onClick={onClose}
+      data-ocid="offers.eligibility.modal"
+    >
+      <motion.div
+        initial={{ scale: 0.88, opacity: 0, y: 24 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.88, opacity: 0, y: 24 }}
+        transition={{ type: "spring", stiffness: 340, damping: 28 }}
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header gradient band */}
+        <div className="bg-gradient-to-r from-indigo-600 to-teal-500 px-6 pt-6 pb-10 relative">
+          <button
+            type="button"
+            onClick={onClose}
+            data-ocid="offers.eligibility.close_button"
+            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+          >
+            ✕
+          </button>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-2xl border border-white/30">
+              {lender.icon}
+            </div>
+            <div>
+              <h2 className="text-white font-black text-lg leading-tight">
+                {lender.name}
+              </h2>
+              <span className="inline-flex items-center gap-1 bg-red-500/80 text-white text-xs font-bold px-2.5 py-0.5 rounded-full mt-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                Not Eligible
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Content card lifted over gradient */}
+        <div className="-mt-6 mx-4 bg-white rounded-2xl shadow-lg border border-slate-100 p-5 mb-4">
+          {/* Reason */}
+          <div className="flex items-start gap-3 mb-5">
+            <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-base">⚠️</span>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">
+                Reason for Ineligibility
+              </p>
+              <p className="text-slate-700 font-semibold text-sm">
+                {lender.reason}
+              </p>
+            </div>
+          </div>
+
+          {/* Tips */}
+          <div className="bg-gradient-to-br from-indigo-50 to-teal-50 rounded-2xl p-4 mb-4">
+            <p className="text-xs font-black text-indigo-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <span>💡</span> How to Improve Your Eligibility
+            </p>
+            <ul className="space-y-2.5">
+              {tips.map((tip, i) => (
+                <motion.li
+                  key={tip}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08 + i * 0.06 }}
+                  className="flex items-start gap-2.5"
+                >
+                  <span className="w-5 h-5 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-600 font-bold text-[10px] flex-shrink-0 mt-0.5">
+                    {i + 1}
+                  </span>
+                  <span className="text-slate-600 text-sm leading-snug">
+                    {tip}
+                  </span>
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Next check date chip */}
+          <div className="flex items-center justify-center gap-2 bg-teal-50 border border-teal-200 rounded-xl px-4 py-2.5">
+            <span className="text-teal-500 text-sm">📅</span>
+            <span className="text-teal-700 text-sm font-semibold">
+              Check back after 90 days
+            </span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 pb-5">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={onClose}
+            data-ocid="offers.eligibility.confirm_button"
+            className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-teal-500 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-shadow text-sm"
+          >
+            Got It — I'll Improve My Profile ✓
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function MyOffers() {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("All");
+  const [selectedLender, setSelectedLender] = useState<UnmatchedLender | null>(
+    null,
+  );
   const carouselRef = useRef<HTMLDivElement>(null);
 
   const scrollCarousel = (dir: "left" | "right") => {
@@ -197,7 +370,6 @@ export default function MyOffers() {
               className={`bg-gradient-to-br ${o.gradient} rounded-2xl p-5 text-white relative overflow-hidden shadow-xl ${o.shadow}`}
               data-ocid={`offers.recommended.item.${i + 1}`}
             >
-              {/* Decorative blobs */}
               <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/10" />
               <div className="absolute -bottom-8 -left-4 w-24 h-24 rounded-full bg-white/5" />
 
@@ -229,7 +401,6 @@ export default function MyOffers() {
                   </div>
                 </div>
 
-                {/* Animated approval bar */}
                 <div className="mb-4">
                   <div className="h-2 bg-white/20 rounded-full overflow-hidden">
                     <motion.div
@@ -329,7 +500,6 @@ export default function MyOffers() {
                   ₹{o.emi.toLocaleString("en-IN")}
                 </p>
 
-                {/* Animated approval bar */}
                 <div className="flex items-center gap-2 mb-2">
                   <div className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
                     <motion.div
@@ -393,7 +563,6 @@ export default function MyOffers() {
             </div>
           </div>
 
-          {/* Reason bullets */}
           <div className="flex flex-wrap gap-3 mb-5 ml-1">
             {[
               "You don't meet the lender's eligibility criteria.",
@@ -432,7 +601,7 @@ export default function MyOffers() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 + i * 0.06 }}
-                  className="flex-shrink-0 snap-start w-48 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+                  className="flex-shrink-0 snap-start w-52 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md transition-shadow"
                   data-ocid={`offers.unmatched.item.${i + 1}`}
                 >
                   <div className="flex items-center justify-between mb-3">
@@ -449,7 +618,7 @@ export default function MyOffers() {
                   <p className="text-[10px] text-slate-400 mb-3">
                     {lender.reason}
                   </p>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 mb-3">
                     <span className="flex-1 h-1 bg-red-100 rounded-full overflow-hidden">
                       <span
                         className="block h-full bg-red-300 rounded-full"
@@ -460,9 +629,16 @@ export default function MyOffers() {
                       Not Eligible
                     </span>
                   </div>
-                  <div className="mt-3 w-full py-2 bg-slate-50 border border-slate-200 rounded-xl text-center text-xs text-slate-400 font-medium">
-                    Check Later
-                  </div>
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setSelectedLender(lender)}
+                    data-ocid={`offers.unmatched_check_later.${i + 1}`}
+                    className="mt-1 w-full py-2 bg-gradient-to-r from-indigo-50 to-teal-50 border border-indigo-200 hover:border-indigo-400 rounded-xl text-center text-xs text-indigo-600 font-semibold transition-all hover:shadow-sm hover:shadow-indigo-100"
+                  >
+                    📋 Check Later
+                  </motion.button>
                 </motion.div>
               ))}
             </div>
@@ -482,6 +658,16 @@ export default function MyOffers() {
           </p>
         </motion.div>
       </div>
+
+      {/* Eligibility Modal */}
+      <AnimatePresence>
+        {selectedLender && (
+          <EligibilityModal
+            lender={selectedLender}
+            onClose={() => setSelectedLender(null)}
+          />
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   );
 }

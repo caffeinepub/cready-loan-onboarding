@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Calculators from "./pages/Calculators";
 import CreditReport from "./pages/CreditReport";
@@ -19,18 +19,24 @@ interface AppState {
   name: string;
   mobile: string;
   email: string;
+  employmentType: "salaried" | "self-employed";
+  isReturningUser: boolean;
   setName: (v: string) => void;
   setMobile: (v: string) => void;
   setEmail: (v: string) => void;
+  setEmploymentType: (v: "salaried" | "self-employed") => void;
 }
 
 export const AppContext = createContext<AppState>({
   name: "",
   mobile: "",
   email: "",
+  employmentType: "salaried",
+  isReturningUser: false,
   setName: () => {},
   setMobile: () => {},
   setEmail: () => {},
+  setEmploymentType: () => {},
 });
 
 export function useApp() {
@@ -41,10 +47,33 @@ export default function App() {
   const [name, setName] = useState("Bharat");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("john.doe@example.com");
+  const [employmentType, setEmploymentType] = useState<
+    "salaried" | "self-employed"
+  >("salaried");
+  const [isReturningUser, setIsReturningUser] = useState(false);
+
+  useEffect(() => {
+    const visited = localStorage.getItem("cready_visited");
+    if (visited) {
+      setIsReturningUser(true);
+    } else {
+      localStorage.setItem("cready_visited", "true");
+    }
+  }, []);
 
   return (
     <AppContext.Provider
-      value={{ name, mobile, email, setName, setMobile, setEmail }}
+      value={{
+        name,
+        mobile,
+        email,
+        employmentType,
+        isReturningUser,
+        setName,
+        setMobile,
+        setEmail,
+        setEmploymentType,
+      }}
     >
       <BrowserRouter>
         <Routes>

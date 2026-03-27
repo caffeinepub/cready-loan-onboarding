@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../App";
+import OnboardingProgress from "../components/OnboardingProgress";
 
 const quotes = [
   {
@@ -25,21 +26,28 @@ const consentLabels = [
 
 export default function Step1Registration() {
   const navigate = useNavigate();
-  const { setName, setMobile } = useApp();
+  const { setName, setMobile, setEmploymentType } = useApp();
   const [nameVal, setNameVal] = useState("");
   const [mobileVal, setMobileVal] = useState("");
   const [checks, setChecks] = useState([false, false, false]);
+  const [empType, setEmpType] = useState<"salaried" | "self-employed">(
+    "salaried",
+  );
   const q = quotes[0];
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setName(nameVal || "Bharat");
     setMobile(mobileVal);
+    setEmploymentType(empType);
     navigate("/otp");
   }
 
   return (
-    <div className="min-h-screen flex font-sans">
+    <div className="min-h-screen flex font-sans overflow-x-hidden">
+      <OnboardingProgress currentStep={1} />
+
+      {/* Left hero */}
       <motion.div
         initial={{ opacity: 0, x: -40 }}
         animate={{ opacity: 1, x: 0 }}
@@ -65,21 +73,14 @@ export default function Step1Registration() {
         </div>
       </motion.div>
 
+      {/* Right form */}
       <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
         className="flex-1 bg-white flex flex-col"
       >
-        <div className="h-1 bg-gray-100">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "25%" }}
-            className="h-full bg-gradient-to-r from-indigo-500 to-green-400"
-          />
-        </div>
-
-        <div className="flex-1 flex items-center justify-center p-8">
+        <div className="flex-1 flex items-center justify-center p-6 lg:p-8">
           <div className="w-full max-w-md">
             <p className="text-gray-400 text-sm mb-1">
               Instant Personal Loans Available in
@@ -87,9 +88,41 @@ export default function Step1Registration() {
             <h1 className="text-3xl font-black text-indigo-600 mb-1">
               Let's get you started
             </h1>
-            <p className="text-gray-500 mb-8">
+            <p className="text-gray-500 mb-6">
               Welcome! please enter your details
             </p>
+
+            {/* Employment Type Toggle */}
+            <div className="mb-6">
+              <p className="text-sm font-semibold text-gray-700 mb-2">I am a</p>
+              <div className="relative flex bg-slate-100 rounded-xl p-1">
+                {(["salaried", "self-employed"] as const).map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    data-ocid={`registration.${type.replace("-", "_")}.toggle`}
+                    onClick={() => setEmpType(type)}
+                    className="relative flex-1 py-2.5 text-sm font-semibold z-10 transition-colors min-h-[44px] capitalize"
+                    style={{ color: empType === type ? "white" : "#64748b" }}
+                  >
+                    {empType === type && (
+                      <motion.div
+                        layoutId="empToggleBg"
+                        className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-lg shadow-md"
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 30,
+                        }}
+                      />
+                    )}
+                    <span className="relative z-10">
+                      {type === "salaried" ? "🏢 Salaried" : "💼 Self-Employed"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
@@ -105,7 +138,8 @@ export default function Step1Registration() {
                   placeholder="Enter your full name"
                   value={nameVal}
                   onChange={(e) => setNameVal(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-800 placeholder-gray-400"
+                  autoComplete="name"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-800 placeholder-gray-400 min-h-[44px]"
                 />
               </div>
               <div>
@@ -122,10 +156,12 @@ export default function Step1Registration() {
                   <input
                     id="mobile"
                     type="tel"
+                    inputMode="numeric"
                     placeholder="Enter your mobile number"
                     value={mobileVal}
                     onChange={(e) => setMobileVal(e.target.value)}
-                    className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-800 placeholder-gray-400"
+                    autoComplete="tel"
+                    className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 text-gray-800 placeholder-gray-400 min-h-[44px]"
                   />
                 </div>
               </div>
@@ -158,7 +194,8 @@ export default function Step1Registration() {
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="w-full py-4 bg-slate-700 hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors text-base"
+                data-ocid="registration.submit.button"
+                className="w-full py-4 bg-slate-700 hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors text-base min-h-[44px]"
               >
                 Send OTP
               </motion.button>

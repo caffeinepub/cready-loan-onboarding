@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "motion/react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import FDEligibilityModal from "../components/FDEligibilityModal";
 
 // ─── SVG Gauge ────────────────────────────────────────────────────────────────
 function CreditGauge({ score }: { score: number }) {
@@ -388,93 +389,113 @@ const fdCards = [
 ];
 
 function FDCreditCards() {
+  const [selectedFDIdx, setSelectedFDIdx] = useState<number | null>(null);
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5 }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6"
-      data-ocid="credit.fd_cards.card"
-    >
-      <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
-        <div>
-          <h3 className="text-base font-bold text-gray-900">
-            Credit Cards to Improve CIBIL Score
-          </h3>
-          <p className="text-xs text-gray-500 mt-0.5">
-            FD-backed secured credit cards — best way to build credit
-          </p>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6"
+        data-ocid="credit.fd_cards.card"
+      >
+        <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-gray-900">
+              Credit Cards to Improve CIBIL Score
+            </h3>
+            <p className="text-xs text-gray-500 mt-0.5">
+              FD-backed secured credit cards — best way to build credit
+            </p>
+          </div>
+          <span className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full">
+            FD-Backed
+          </span>
         </div>
-        <span className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full">
-          FD-Backed
-        </span>
-      </div>
-      <div className="divide-y divide-gray-50">
-        {fdCards.map((card, i) => (
-          <motion.div
-            key={card.id}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.55 + i * 0.08 }}
-            className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors"
-            data-ocid={`credit.fd_card.${i + 1}`}
-          >
-            {/* Card visual */}
-            <div
-              className={`w-14 h-10 rounded-lg bg-gradient-to-br ${card.color} flex items-center justify-center text-xl flex-shrink-0 relative`}
+        <div className="divide-y divide-gray-50">
+          {fdCards.map((card, i) => (
+            <motion.div
+              key={card.id}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.55 + i * 0.08 }}
+              className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors"
+              data-ocid={`credit.fd_card.${i + 1}`}
             >
-              {card.logo}
-              <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[8px] font-bold px-1 py-0.5 rounded-full">
-                FD
-              </span>
-            </div>
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-semibold text-sm text-gray-900 truncate">
-                  {card.name}
-                </span>
-                <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${card.feeColor}`}
-                >
-                  {card.fee}
+              {/* Card visual */}
+              <div
+                className={`w-14 h-10 rounded-lg bg-gradient-to-br ${card.color} flex items-center justify-center text-xl flex-shrink-0 relative`}
+              >
+                {card.logo}
+                <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[8px] font-bold px-1 py-0.5 rounded-full">
+                  FD
                 </span>
               </div>
-              <div className="text-xs text-gray-400 mt-0.5">
-                FD starting from {card.fdFrom} · {card.bank}
-              </div>
-              <div className="flex flex-wrap gap-2 mt-1.5">
-                {card.benefits.map((b) => (
-                  <span
-                    key={b}
-                    className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
-                  >
-                    {b}
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-semibold text-sm text-gray-900 truncate">
+                    {card.name}
                   </span>
-                ))}
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${card.feeColor}`}
+                  >
+                    {card.fee}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-400 mt-0.5">
+                  FD starting from {card.fdFrom} · {card.bank}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-1.5">
+                  {card.benefits.map((b) => (
+                    <span
+                      key={b}
+                      className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
+                    >
+                      {b}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
-            {/* Actions */}
-            <div className="flex flex-col items-end gap-2 flex-shrink-0">
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                data-ocid={`credit.fd_card_eligibility.${i + 1}`}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
-              >
-                Check Eligibility
-              </motion.button>
-              <button
-                type="button"
-                className="text-[11px] text-indigo-500 hover:underline"
-              >
-                + More Details
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+              {/* Actions */}
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  data-ocid={`credit.fd_card_eligibility.${i + 1}`}
+                  onClick={() => setSelectedFDIdx(i)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+                >
+                  Check Eligibility
+                </motion.button>
+                <button
+                  type="button"
+                  className="text-[11px] text-indigo-500 hover:underline"
+                >
+                  + More Details
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+      <FDEligibilityModal
+        open={selectedFDIdx !== null}
+        onClose={() => setSelectedFDIdx(null)}
+        card={
+          selectedFDIdx !== null
+            ? {
+                name: fdCards[selectedFDIdx].name,
+                bank: fdCards[selectedFDIdx].bank,
+                fdFrom: fdCards[selectedFDIdx].fdFrom,
+                fee: fdCards[selectedFDIdx].fee,
+                logo: fdCards[selectedFDIdx].logo,
+                color: fdCards[selectedFDIdx].color,
+              }
+            : null
+        }
+      />
+    </>
   );
 }
 
@@ -945,6 +966,7 @@ function InsightRow({
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function CreditReport() {
   const score = 777;
+  const [showRecoFDModal, setShowRecoFDModal] = useState(false);
   const maxHistory = Math.max(...scoreHistory.map((s) => s.score));
 
   return (
@@ -1297,6 +1319,7 @@ export default function CreditReport() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 data-ocid="credit.recommended_card.button"
+                onClick={() => setShowRecoFDModal(true)}
                 className="w-full py-2.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-emerald-500 to-teal-500"
               >
                 Check Eligibility →
@@ -1305,6 +1328,18 @@ export default function CreditReport() {
           </div>
         </div>
       </div>
+      <FDEligibilityModal
+        open={showRecoFDModal}
+        onClose={() => setShowRecoFDModal(false)}
+        card={{
+          name: fdCards[0].name,
+          bank: fdCards[0].bank,
+          fdFrom: fdCards[0].fdFrom,
+          fee: fdCards[0].fee,
+          logo: fdCards[0].logo,
+          color: fdCards[0].color,
+        }}
+      />
     </DashboardLayout>
   );
 }
