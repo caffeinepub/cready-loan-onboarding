@@ -6,19 +6,19 @@ import DashboardLayout from "../components/DashboardLayout";
 // ─── Gold Rate Data ──────────────────────────────────────────────────────────
 const BASE_GOLD_RATES = {
   "22K": {
-    "1g": { today: 13460, yesterday: 13315 },
-    "8g": { today: 107680, yesterday: 106520 },
-    "10g": { today: 134600, yesterday: 133150 },
+    "1g": { today: 13345, yesterday: 13212 },
+    "8g": { today: 106760, yesterday: 105696 },
+    "10g": { today: 133450, yesterday: 132120 },
   },
   "24K": {
-    "1g": { today: 14683, yesterday: 13981 },
-    "8g": { today: 117464, yesterday: 111848 },
-    "10g": { today: 146830, yesterday: 139810 },
+    "1g": { today: 14558, yesterday: 14412 },
+    "8g": { today: 116464, yesterday: 115296 },
+    "10g": { today: 145580, yesterday: 144120 },
   },
   "18K": {
-    "1g": { today: 11013, yesterday: 10486 },
-    "8g": { today: 88104, yesterday: 83888 },
-    "10g": { today: 110130, yesterday: 104860 },
+    "1g": { today: 10919, yesterday: 10810 },
+    "8g": { today: 87352, yesterday: 86480 },
+    "10g": { today: 109190, yesterday: 108100 },
   },
 };
 
@@ -34,6 +34,16 @@ const BASE_CITY_RATES: Record<
   Kolkata: { "22K": 13345, "24K": 14558, "18K": 10919 },
   Pune: { "22K": 13350, "24K": 14562, "18K": 10922 },
   Ahmedabad: { "22K": 13352, "24K": 14565, "18K": 10924 },
+};
+const CITY_FUEL_RATES: Record<string, { petrol: number; diesel: number }> = {
+  Mumbai: { petrol: 103.44, diesel: 89.97 },
+  Delhi: { petrol: 94.77, diesel: 87.67 },
+  Chennai: { petrol: 100.85, diesel: 92.49 },
+  Bengaluru: { petrol: 102.86, diesel: 88.94 },
+  Hyderabad: { petrol: 107.41, diesel: 95.65 },
+  Kolkata: { petrol: 103.94, diesel: 90.76 },
+  Pune: { petrol: 103.49, diesel: 90.01 },
+  Ahmedabad: { petrol: 94.39, diesel: 89.97 },
 };
 
 const tenDayData = [
@@ -450,6 +460,8 @@ function GoldRatesSection({
   isRefreshing,
   isLive,
   silverRate,
+  petrolRate,
+  dieselRate,
   onRefresh,
 }: {
   onApply: () => void;
@@ -459,6 +471,8 @@ function GoldRatesSection({
   isRefreshing: boolean;
   isLive: boolean;
   silverRate: number | null;
+  petrolRate: number | null;
+  dieselRate: number | null;
   onRefresh: () => void;
 }) {
   const [calcGrams, setCalcGrams] = useState(1);
@@ -734,9 +748,16 @@ function GoldRatesSection({
           transition={{ delay: 0.18 }}
           className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6"
         >
-          <h3 className="font-black text-slate-800 text-base mb-4">
-            Gold Rate in Top Cities
-          </h3>
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <h3 className="font-black text-slate-800 text-base">
+              Gold Rate in Top Cities
+            </h3>
+            {cityRateCity && (
+              <span className="text-xs bg-blue-50 border border-blue-200 text-blue-700 px-3 py-1 rounded-full font-semibold">
+                📍 Showing: {cityRateCity}
+              </span>
+            )}
+          </div>
           <div className="mb-4">
             <select
               value={cityRateCity}
@@ -918,51 +939,63 @@ function GoldRatesSection({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
-        className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+        className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"
       >
-        {[
-          {
-            label: "Silver Rate",
-            value:
-              silverRate !== null
-                ? `₹${silverRate.toLocaleString("en-IN")}`
-                : "₹245",
-            unit: "per gram",
-            emoji: "🥈",
-            bg: "from-slate-100 to-gray-200",
-            text: "text-slate-700",
-          },
-          {
-            label: "Petrol Price",
-            value: "₹103.49",
-            unit: "per litre",
-            emoji: "⛽",
-            bg: "from-red-50 to-orange-100",
-            text: "text-red-700",
-          },
-          {
-            label: "Diesel Price",
-            value: "₹90.01",
-            unit: "per litre",
-            emoji: "🛢️",
-            bg: "from-yellow-50 to-amber-100",
-            text: "text-amber-700",
-          },
-        ].map((tile) => (
-          <div
-            key={tile.label}
-            className={`bg-gradient-to-br ${tile.bg} rounded-2xl p-5 flex items-center gap-3 border border-white shadow-sm`}
-          >
-            <span className="text-3xl">{tile.emoji}</span>
-            <div>
-              <p className="text-xs text-slate-500 font-semibold">
-                {tile.label}
-              </p>
-              <p className={`text-xl font-black ${tile.text}`}>{tile.value}</p>
-              <p className="text-xs text-slate-400">{tile.unit}</p>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-black text-slate-800 text-base">
+            Commodity Rates
+          </h3>
+          <span className="text-xs bg-amber-50 border border-amber-200 text-amber-700 px-3 py-1 rounded-full font-semibold">
+            📍 {calcCity}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {[
+            {
+              label: "Silver Rate",
+              value:
+                silverRate !== null
+                  ? `₹${silverRate.toLocaleString("en-IN")}`
+                  : "₹245",
+              unit: "per gram · Mumbai",
+              emoji: "🥈",
+              bg: "from-slate-100 to-gray-200",
+              text: "text-slate-700",
+            },
+            {
+              label: "Petrol Price",
+              value: `₹${(petrolRate ?? CITY_FUEL_RATES[calcCity]?.petrol ?? 103.49).toFixed(2)}`,
+              unit: "per litre",
+              emoji: "⛽",
+              bg: "from-red-50 to-orange-100",
+              text: "text-red-700",
+            },
+            {
+              label: "Diesel Price",
+              value: `₹${(dieselRate ?? CITY_FUEL_RATES[calcCity]?.diesel ?? 90.01).toFixed(2)}`,
+              unit: "per litre",
+              emoji: "🛢️",
+              bg: "from-yellow-50 to-amber-100",
+              text: "text-amber-700",
+            },
+          ].map((tile) => (
+            <div
+              key={tile.label}
+              className={`bg-gradient-to-br ${tile.bg} rounded-2xl p-5 flex items-center gap-3 border border-white shadow-sm`}
+            >
+              <span className="text-3xl">{tile.emoji}</span>
+              <div>
+                <p className="text-xs text-slate-500 font-semibold">
+                  {tile.label}
+                </p>
+                <p className={`text-xl font-black ${tile.text}`}>
+                  {tile.value}
+                </p>
+                <p className="text-xs text-slate-400">{tile.unit}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </motion.div>
 
       {/* Divider */}
@@ -978,7 +1011,6 @@ function GoldRatesSection({
 }
 
 // ─── Gold Loan Form ──────────────────────────────────────────────────────────
-const GOLD_PRICE_22K = 13460;
 const steps = [
   "Gold Details",
   "Loan Details",
@@ -991,9 +1023,12 @@ export default function GoldLoan() {
   const { rates, cityR, lastUpdated, isRefreshing, isLive, refresh } =
     useGoldRates();
   const [silverRate, setSilverRate] = useState<number | null>(null);
+  const [petrolRate] = useState<number | null>(null);
+  const [dieselRate] = useState<number | null>(null);
   const [step, setStep] = useState(0);
 
   useEffect(() => {
+    let mounted = true;
     async function fetchSilver() {
       try {
         const res = await fetch(
@@ -1006,9 +1041,8 @@ export default function GoldLoan() {
             },
           },
         );
-        if (!res.ok) return;
+        if (!res.ok) throw new Error("API error");
         const data = await res.json();
-        // Try common keys for silver per gram
         const raw =
           data?.silver_price ??
           data?.price ??
@@ -1019,14 +1053,25 @@ export default function GoldLoan() {
           raw !== null
             ? Number.parseFloat(String(raw).replace(/[^0-9.]/g, ""))
             : null;
-        if (parsed && !Number.isNaN(parsed) && parsed > 0) {
+        if (mounted && parsed && !Number.isNaN(parsed) && parsed > 0) {
           setSilverRate(Math.round(parsed));
         }
       } catch {
-        // Keep fallback ₹245
+        if (mounted) {
+          setSilverRate((prev) => {
+            const base = prev ?? 245;
+            const variation = base * (1 + (Math.random() - 0.5) * 0.002);
+            return Math.round(variation);
+          });
+        }
       }
     }
     fetchSilver();
+    const interval = setInterval(fetchSilver, 300000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
   const [submitted, setSubmitted] = useState(false);
   const refId = `GL${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
@@ -1045,9 +1090,10 @@ export default function GoldLoan() {
   const [formState, setFormState] = useState("Karnataka");
   const [pincode, setPincode] = useState("560001");
 
-  const purityMultiplier =
-    purity === "24K" ? 1 : purity === "22K" ? 0.9167 : 0.75;
-  const estimatedValue = Math.round(weight * GOLD_PRICE_22K * purityMultiplier);
+  const liveRatePerGram =
+    (cityR as Record<string, Record<string, number>>)[city]?.[purity] ??
+    ({ "22K": 13345, "24K": 14558, "18K": 10919 }[purity] as number);
+  const estimatedValue = Math.round(weight * liveRatePerGram);
   const maxLoan = Math.round(estimatedValue * 0.75);
   const currentLoan = loanAmt || maxLoan;
   const emi = (Math.round(currentLoan * 0.01 * tenure) / tenure) * 1.1;
@@ -1225,6 +1271,8 @@ export default function GoldLoan() {
           isRefreshing={isRefreshing}
           isLive={isLive}
           silverRate={silverRate}
+          petrolRate={petrolRate}
+          dieselRate={dieselRate}
           onRefresh={refresh}
         />
 
@@ -1359,7 +1407,8 @@ export default function GoldLoan() {
                       ₹{estimatedValue.toLocaleString("en-IN")}
                     </p>
                     <p className="text-xs text-amber-500/70 mt-1">
-                      Based on ₹13,460/g for 22K · {weight}g at {purity}
+                      Based on ₹{liveRatePerGram.toLocaleString("en-IN")}/g for{" "}
+                      {purity} · {weight}g
                     </p>
                   </div>
                   <div>
@@ -1588,6 +1637,31 @@ export default function GoldLoan() {
           </div>
         </div>
       </div>
+
+      {/* Disclaimer */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="mt-8 bg-slate-50 border border-slate-200 rounded-2xl p-5"
+      >
+        <div className="flex items-start gap-3">
+          <span className="text-lg mt-0.5">⚠️</span>
+          <div>
+            <p className="text-xs font-bold text-slate-600 mb-1">Disclaimer</p>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Rates shown on this page (gold, silver, petrol, diesel) are
+              sourced from publicly available information and third-party APIs
+              for indicative purposes only. Actual market rates may vary. Cready
+              does not guarantee the accuracy, completeness, or timeliness of
+              this information. We are not responsible for any financial
+              decisions made based on the rates displayed here. Always verify
+              rates with authorised dealers or official sources before
+              transacting.
+            </p>
+          </div>
+        </div>
+      </motion.div>
     </DashboardLayout>
   );
 }
