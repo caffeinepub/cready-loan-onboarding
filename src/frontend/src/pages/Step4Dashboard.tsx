@@ -834,8 +834,8 @@ export default function Step4Dashboard() {
                   style={{ scrollSnapAlign: "start" }}
                   data-ocid={`dashboard.offer.${i + 1}`}
                 >
-                  <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10" />
-                  <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
+                  <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/20" />
+                  <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/20" />
                   <div className="relative">
                     <span className="inline-block bg-white/25 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/40 mb-2">
                       ⭐ Recommended
@@ -848,24 +848,24 @@ export default function Step4Dashboard() {
                         {offer.badge}
                       </span>
                     </div>
-                    <p className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-0.5">
+                    <p className="text-xs font-semibold text-white/90 uppercase tracking-wider mb-0.5">
                       {offer.bank}
                     </p>
-                    <p className="text-xs text-white/60 mb-3">{offer.type}</p>
+                    <p className="text-xs text-white/80 mb-3">{offer.type}</p>
                     <p className="text-2xl font-black mb-3">{offer.amount}</p>
                     <div className="grid grid-cols-2 gap-2 mb-3 text-[10px]">
                       <div>
-                        <p className="text-white/60">Interest</p>
+                        <p className="text-white/80">Interest</p>
                         <p className="font-bold">{offer.rate}</p>
                       </div>
                       <div>
-                        <p className="text-white/60">Processing</p>
+                        <p className="text-white/80">Processing</p>
                         <p className="font-bold">{offer.processing}</p>
                       </div>
                     </div>
                     <div className="mb-3">
                       <div className="flex justify-between text-[10px] mb-1">
-                        <span className="text-white/70">Approval Chance</span>
+                        <span className="text-white/90">Approval Chance</span>
                         <span className="font-bold">{offer.approval}%</span>
                       </div>
                       <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
@@ -915,8 +915,8 @@ export default function Step4Dashboard() {
                 className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-4 text-white relative overflow-hidden cursor-pointer ring-2 ring-white/20 shadow-xl`}
                 data-ocid={`dashboard.offer.${i + 1}`}
               >
-                <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10" />
-                <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
+                <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/20" />
+                <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/20" />
                 <div className="relative">
                   <span className="inline-block bg-white/25 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/40 mb-2">
                     ⭐ Recommended
@@ -929,24 +929,24 @@ export default function Step4Dashboard() {
                       {offer.badge}
                     </span>
                   </div>
-                  <p className="text-xs font-semibold text-white/70 uppercase tracking-wider mb-0.5">
+                  <p className="text-xs font-semibold text-white/90 uppercase tracking-wider mb-0.5">
                     {offer.bank}
                   </p>
-                  <p className="text-xs text-white/60 mb-3">{offer.type}</p>
+                  <p className="text-xs text-white/80 mb-3">{offer.type}</p>
                   <p className="text-2xl font-black mb-3">{offer.amount}</p>
                   <div className="grid grid-cols-2 gap-2 mb-3 text-[10px]">
                     <div>
-                      <p className="text-white/60">Interest</p>
+                      <p className="text-white/80">Interest</p>
                       <p className="font-bold">{offer.rate}</p>
                     </div>
                     <div>
-                      <p className="text-white/60">Processing</p>
+                      <p className="text-white/80">Processing</p>
                       <p className="font-bold">{offer.processing}</p>
                     </div>
                   </div>
                   <div className="mb-3">
                     <div className="flex justify-between text-[10px] mb-1">
-                      <span className="text-white/70">Approval Chance</span>
+                      <span className="text-white/90">Approval Chance</span>
                       <span className="font-bold">{offer.approval}%</span>
                     </div>
                     <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
@@ -1012,8 +1012,8 @@ export default function Step4Dashboard() {
                 className={`bg-gradient-to-br ${card.gradient} rounded-xl shadow-md p-4 relative overflow-hidden`}
                 data-ocid={`dashboard.fd_card.${i + 1}`}
               >
-                <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-white/10" />
-                <div className="absolute -bottom-6 -left-2 w-14 h-14 rounded-full bg-white/5" />
+                <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-white/20" />
+                <div className="absolute -bottom-6 -left-2 w-14 h-14 rounded-full bg-white/20" />
                 <div className="relative">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-xl">{card.logo}</span>
