@@ -19,12 +19,29 @@ const kycItems = [
   },
 ];
 
+const employmentTypeOptions = [
+  "Salaried",
+  "Self-Employed",
+  "Business Owner",
+  "Freelancer",
+];
+
 export default function Profile() {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState("Bharat Bhushan");
   const [email, setEmail] = useState("bharat.sharma@gmail.com");
   const [mobile, setMobile] = useState("+91 98765 43210");
   const [address, setAddress] = useState("42, MG Road, Bengaluru, KA 560001");
+
+  // Employment Details state
+  const [employmentType, setEmploymentType] = useState("Salaried");
+  const [companyName, setCompanyName] = useState("Tata Consultancy Services");
+  const [monthlyIncome, setMonthlyIncome] = useState("₹95,000");
+  const [workExperience, setWorkExperience] = useState("6 Years");
+
+  function handleSave() {
+    setEditing(false);
+  }
 
   return (
     <DashboardLayout>
@@ -43,7 +60,8 @@ export default function Profile() {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => setEditing(!editing)}
+            onClick={editing ? handleSave : () => setEditing(true)}
+            data-ocid="profile.edit_button"
             className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all w-full sm:w-auto ${
               editing
                 ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
@@ -153,6 +171,7 @@ export default function Profile() {
                     <input
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
+                      data-ocid={`profile.${field.label.toLowerCase().replace(/ /g, "_")}.input`}
                       className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   ) : (
@@ -208,36 +227,129 @@ export default function Profile() {
             transition={{ delay: 0.25 }}
             className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100"
           >
-            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">
-              Employment Details
-            </h3>
-            <div className="space-y-4">
-              {[
-                { label: "Employment Type", value: "Salaried", icon: "💼" },
-                {
-                  label: "Company Name",
-                  value: "Tata Consultancy Services",
-                  icon: "🏢",
-                },
-                { label: "Monthly Income", value: "₹95,000", icon: "💰" },
-                { label: "Work Experience", value: "6 Years", icon: "📅" },
-              ].map((item, i) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 + i * 0.07 }}
-                  className="flex items-center gap-3"
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
+                Employment Details
+              </h3>
+              {editing && (
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center gap-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-200"
                 >
-                  <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-400">{item.label}</p>
-                    <p className="font-bold text-slate-800">{item.value}</p>
-                  </div>
-                </motion.div>
-              ))}
+                  ✏️ Editing
+                </motion.span>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              {/* Employment Type */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="flex items-start gap-3"
+              >
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                  💼
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-slate-400 mb-1">Employment Type</p>
+                  {editing ? (
+                    <select
+                      value={employmentType}
+                      onChange={(e) => setEmploymentType(e.target.value)}
+                      data-ocid="profile.employment_type.select"
+                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                    >
+                      {employmentTypeOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="font-bold text-slate-800">{employmentType}</p>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Company Name */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.37 }}
+                className="flex items-start gap-3"
+              >
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                  🏢
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-slate-400 mb-1">Company Name</p>
+                  {editing ? (
+                    <input
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      data-ocid="profile.company_name.input"
+                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  ) : (
+                    <p className="font-bold text-slate-800">{companyName}</p>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Monthly Income */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.44 }}
+                className="flex items-start gap-3"
+              >
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                  💰
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-slate-400 mb-1">Monthly Income</p>
+                  {editing ? (
+                    <input
+                      value={monthlyIncome}
+                      onChange={(e) => setMonthlyIncome(e.target.value)}
+                      data-ocid="profile.monthly_income.input"
+                      placeholder="e.g. ₹95,000"
+                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  ) : (
+                    <p className="font-bold text-slate-800">{monthlyIncome}</p>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Work Experience */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.51 }}
+                className="flex items-start gap-3"
+              >
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                  📅
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-slate-400 mb-1">Work Experience</p>
+                  {editing ? (
+                    <input
+                      value={workExperience}
+                      onChange={(e) => setWorkExperience(e.target.value)}
+                      data-ocid="profile.work_experience.input"
+                      placeholder="e.g. 6 Years"
+                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  ) : (
+                    <p className="font-bold text-slate-800">{workExperience}</p>
+                  )}
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>
