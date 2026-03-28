@@ -10,6 +10,14 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface GoldRates {
+  'city' : string,
+  'rate22K' : bigint,
+  'rate24K' : bigint,
+  'rate18K' : bigint,
+  'lastUpdated' : bigint,
+  'isLive' : boolean,
+}
 export interface LoanApplication {
   'status' : string,
   'trackingNumber' : bigint,
@@ -36,6 +44,7 @@ export interface Profile {
 export interface _SERVICE {
   'getAllLoanApplications' : ActorMethod<[], Array<LoanApplication>>,
   'getApplicationStatus' : ActorMethod<[bigint], string>,
+  'getGoldRates' : ActorMethod<[string], GoldRates>,
   'getLoanApplication' : ActorMethod<[bigint], LoanApplication>,
   'getLoanOffers' : ActorMethod<[], Array<LoanOffer>>,
   'submitLoanApplication' : ActorMethod<[Profile, bigint], bigint>,

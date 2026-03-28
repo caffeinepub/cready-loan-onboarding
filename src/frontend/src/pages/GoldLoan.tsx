@@ -1,34 +1,49 @@
 import { AnimatePresence, motion } from "motion/react";
 import type React from "react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 
 // ─── Gold Rate Data ──────────────────────────────────────────────────────────
-const goldRates = {
+const BASE_GOLD_RATES = {
   "22K": {
-    "1g": { today: 13315, yesterday: 13515 },
-    "8g": { today: 106520, yesterday: 108120 },
-    "10g": { today: 133150, yesterday: 135150 },
+    "1g": { today: 13460, yesterday: 13315 },
+    "8g": { today: 107680, yesterday: 106520 },
+    "10g": { today: 134600, yesterday: 133150 },
   },
   "24K": {
-    "1g": { today: 13981, yesterday: 14191 },
-    "8g": { today: 111848, yesterday: 113528 },
-    "10g": { today: 139810, yesterday: 141910 },
+    "1g": { today: 14683, yesterday: 13981 },
+    "8g": { today: 117464, yesterday: 111848 },
+    "10g": { today: 146830, yesterday: 139810 },
+  },
+  "18K": {
+    "1g": { today: 11013, yesterday: 10486 },
+    "8g": { today: 88104, yesterday: 83888 },
+    "10g": { today: 110130, yesterday: 104860 },
   },
 };
 
-const cityRates: Record<string, { "22K": number; "24K": number }> = {
-  Mumbai: { "22K": 13315, "24K": 13981 },
-  Delhi: { "22K": 13320, "24K": 13986 },
-  Bengaluru: { "22K": 13310, "24K": 13975 },
-  Chennai: { "22K": 13318, "24K": 13984 },
-  Hyderabad: { "22K": 13312, "24K": 13978 },
-  Kolkata: { "22K": 13325, "24K": 13992 },
-  Pune: { "22K": 13308, "24K": 13974 },
-  Ahmedabad: { "22K": 13322, "24K": 13988 },
+const BASE_CITY_RATES: Record<
+  string,
+  { "22K": number; "24K": number; "18K": number }
+> = {
+  Mumbai: { "22K": 13575, "24K": 14809, "18K": 11107 },
+  Delhi: { "22K": 13358, "24K": 14573, "18K": 10930 },
+  Chennai: { "22K": 13431, "24K": 14652, "18K": 10989 },
+  Bengaluru: { "22K": 13345, "24K": 14558, "18K": 10919 },
+  Hyderabad: { "22K": 13345, "24K": 14558, "18K": 10919 },
+  Kolkata: { "22K": 13345, "24K": 14558, "18K": 10919 },
+  Pune: { "22K": 13350, "24K": 14562, "18K": 10922 },
+  Ahmedabad: { "22K": 13352, "24K": 14565, "18K": 10924 },
 };
 
 const tenDayData = [
+  {
+    date: "28 Mar 2026",
+    k22: 107680,
+    k22chg: +1160,
+    k24: 117464,
+    k24chg: +5616,
+  },
   {
     date: "27 Mar 2026",
     k22: 106520,
@@ -74,17 +89,16 @@ const tenDayData = [
     k24: 108568,
     k24chg: -1680,
   },
-  { date: "18 Mar 2026", k22: 105000, k22chg: +400, k24: 110248, k24chg: +420 },
 ];
 
 // Weekly chart data: per gram, Oct to Mar
 const chartData22K = [
   10800, 11100, 11400, 11200, 11600, 11900, 12200, 12000, 12400, 12700, 13000,
-  12800, 13100, 13315, 13315,
+  12800, 13100, 13315, 13460,
 ];
 const chartData24K = [
   11340, 11655, 11970, 11760, 12180, 12495, 12810, 12600, 13020, 13335, 13650,
-  13440, 13755, 13981, 13981,
+  13440, 13755, 13981, 14683,
 ];
 const chartLabels = [
   "Oct",
@@ -235,20 +249,180 @@ function LineChart() {
   );
 }
 
+// ─── Auto-refresh Gold Rates Hook ────────────────────────────────────────────
+const RAPIDAPI_KEY = "547e59a0c9msh94218b69b03c6d0p13afcejsn056dd1d013c0";
+const RAPIDAPI_HOST = "gold-silver-live-price-india.p.rapidapi.com";
+const CITIES = [
+  "Mumbai",
+  "Delhi",
+  "Chennai",
+  "Bengaluru",
+  "Hyderabad",
+  "Kolkata",
+  "Pune",
+  "Ahmedabad",
+] as const;
+
+async function fetchGoldForCity(city: string): Promise<{
+  rate22K: number;
+  rate24K: number;
+  rate18K: number;
+  isLive: boolean;
+} | null> {
+  try {
+    const res = await fetch(
+      `https://${RAPIDAPI_HOST}/gold_price_india_city_value/?city=${encodeURIComponent(city)}`,
+      {
+        headers: {
+          "x-rapidapi-key": RAPIDAPI_KEY,
+          "x-rapidapi-host": RAPIDAPI_HOST,
+        },
+      },
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const r22 = Number(
+      data?.gold_price_22K ?? data?.["22K"] ?? data?.rate_22K ?? 0,
+    );
+    const r24 = Number(
+      data?.gold_price_24K ?? data?.["24K"] ?? data?.rate_24K ?? 0,
+    );
+    const r18 = Number(
+      data?.gold_price_18K ?? data?.["18K"] ?? data?.rate_18K ?? 0,
+    );
+    if (!r22 || !r24) return null;
+    return {
+      rate22K: r22,
+      rate24K: r24,
+      rate18K: r18 || Math.round(r24 * 0.75),
+      isLive: true,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function buildRatesFromPerGram(
+  r22: number,
+  r24: number,
+  r18: number,
+): typeof BASE_GOLD_RATES {
+  const yesterday = (today: number) => Math.round(today * 0.99);
+  return {
+    "22K": {
+      "1g": { today: r22, yesterday: yesterday(r22) },
+      "8g": { today: r22 * 8, yesterday: yesterday(r22 * 8) },
+      "10g": { today: r22 * 10, yesterday: yesterday(r22 * 10) },
+    },
+    "24K": {
+      "1g": { today: r24, yesterday: yesterday(r24) },
+      "8g": { today: r24 * 8, yesterday: yesterday(r24 * 8) },
+      "10g": { today: r24 * 10, yesterday: yesterday(r24 * 10) },
+    },
+    "18K": {
+      "1g": { today: r18, yesterday: yesterday(r18) },
+      "8g": { today: r18 * 8, yesterday: yesterday(r18 * 8) },
+      "10g": { today: r18 * 10, yesterday: yesterday(r18 * 10) },
+    },
+  };
+}
+
+function useGoldRates() {
+  const [rates, setRates] = useState(BASE_GOLD_RATES);
+  const [cityR, setCityR] = useState(BASE_CITY_RATES);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLive, setIsLive] = useState(false);
+
+  const refresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      const results = await Promise.allSettled(
+        CITIES.map((city) => fetchGoldForCity(city)),
+      );
+      const newCityR: Record<
+        string,
+        { "22K": number; "24K": number; "18K": number }
+      > = { ...BASE_CITY_RATES };
+      let baseRate24 = BASE_GOLD_RATES["24K"]["1g"].today;
+      let baseRate22 = BASE_GOLD_RATES["22K"]["1g"].today;
+      let baseRate18 = BASE_GOLD_RATES["18K"]["1g"].today;
+      let gotLive = false;
+      let firstSuccess = true;
+
+      results.forEach((result, idx) => {
+        if (result.status === "fulfilled" && result.value) {
+          const d = result.value;
+          const cityName = CITIES[idx];
+          newCityR[cityName] = {
+            "22K": d.rate22K,
+            "24K": d.rate24K,
+            "18K": d.rate18K,
+          };
+          if (firstSuccess) {
+            baseRate22 = d.rate22K;
+            baseRate24 = d.rate24K;
+            baseRate18 = d.rate18K;
+            gotLive = d.isLive;
+            firstSuccess = false;
+          }
+        }
+      });
+
+      if (!firstSuccess) {
+        setRates(buildRatesFromPerGram(baseRate22, baseRate24, baseRate18));
+        setCityR(newCityR);
+        setIsLive(gotLive);
+      }
+      setLastUpdated(new Date());
+    } catch {
+      setLastUpdated(new Date());
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    refresh();
+    const id = setInterval(refresh, 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, [refresh]);
+
+  return { rates, cityR, lastUpdated, isRefreshing, isLive, refresh };
+}
+
 // ─── Gold Rates Section ──────────────────────────────────────────────────────
-function GoldRatesSection({ onApply }: { onApply: () => void }) {
+function GoldRatesSection({
+  onApply,
+  rates,
+  cityR,
+  lastUpdated,
+  isRefreshing,
+  isLive,
+  silverRate,
+  onRefresh,
+}: {
+  onApply: () => void;
+  rates: typeof BASE_GOLD_RATES;
+  cityR: typeof BASE_CITY_RATES;
+  lastUpdated: Date;
+  isRefreshing: boolean;
+  isLive: boolean;
+  silverRate: number | null;
+  onRefresh: () => void;
+}) {
   const [calcGrams, setCalcGrams] = useState(1);
-  const [calcKarat, setCalcKarat] = useState<"22K" | "24K">("22K");
+  const [calcKarat, setCalcKarat] = useState<"22K" | "24K" | "18K">("22K");
   const [calcCity, setCalcCity] = useState("Mumbai");
   const [calcResult, setCalcResult] = useState<number | null>(null);
   const [cityRateCity, setCityRateCity] = useState("");
 
   function calculate() {
-    const ratePerGram = cityRates[calcCity][calcKarat];
+    const ratePerGram = cityR[calcCity][calcKarat];
     setCalcResult(ratePerGram * calcGrams);
   }
 
-  const cities = Object.keys(cityRates);
+  const cities = Object.keys(cityR);
 
   return (
     <motion.div
@@ -264,14 +438,37 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
             <div className="flex items-center gap-2 mb-1">
               <span className="text-2xl">🏅</span>
               <h2 className="text-2xl font-black">Gold Rates in India</h2>
-              <span className="flex items-center gap-1.5 bg-white/20 px-2.5 py-1 rounded-full text-xs font-bold">
-                <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse" />
-                Live
-              </span>
+              {isLive ? (
+                <span className="flex items-center gap-1.5 bg-white/20 px-2.5 py-1 rounded-full text-xs font-bold">
+                  <span className="w-2 h-2 bg-green-300 rounded-full animate-pulse" />
+                  Live
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 bg-amber-900/40 px-2.5 py-1 rounded-full text-xs font-bold text-amber-200">
+                  <span className="w-2 h-2 bg-amber-300 rounded-full" />
+                  Cached
+                </span>
+              )}
             </div>
-            <p className="text-amber-100 text-sm">
-              Last updated: 27 Mar 2026, 10:00 AM
-            </p>
+            <div className="flex items-center gap-3 mt-1">
+              <p className="text-amber-100 text-sm">
+                Last updated: {lastUpdated.toLocaleTimeString("en-IN")}
+              </p>
+              <button
+                type="button"
+                onClick={onRefresh}
+                disabled={isRefreshing}
+                className="flex items-center justify-center w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 text-amber-200 hover:text-white transition-all disabled:opacity-60"
+                title="Refresh rates"
+              >
+                <span
+                  className={`text-base leading-none ${isRefreshing ? "animate-spin inline-block" : ""}`}
+                  style={{ display: "inline-block" }}
+                >
+                  ↻
+                </span>
+              </button>
+            </div>
           </div>
           <motion.button
             whileHover={{
@@ -302,7 +499,7 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
 
       {/* Rate Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {(["22K", "24K"] as const).map((karat) => (
+        {(["22K", "24K", "18K"] as const).map((karat) => (
           <motion.div
             key={karat}
             initial={{ opacity: 0, y: 16 }}
@@ -311,7 +508,9 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
             className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
           >
             <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-5 py-3 flex items-center gap-2">
-              <span className="text-lg">{karat === "22K" ? "⭐" : "✨"}</span>
+              <span className="text-lg">
+                {karat === "22K" ? "⭐" : karat === "24K" ? "✨" : "💛"}
+              </span>
               <span className="text-white font-bold text-sm">
                 {karat} Gold Rates Today — Per Gram / 8g / 10g
               </span>
@@ -332,8 +531,13 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
                 </thead>
                 <tbody>
                   {(["1g", "8g", "10g"] as const).map((qty, i) => {
-                    const r = goldRates[karat][qty];
+                    const r = rates[karat][qty];
                     const chg = r.today - r.yesterday;
+                    const pct =
+                      r.yesterday > 0
+                        ? ((chg / r.yesterday) * 100).toFixed(2)
+                        : "0.00";
+                    const isUp = chg >= 0;
                     return (
                       <tr
                         key={qty}
@@ -343,13 +547,20 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
                           {qty}
                         </td>
                         <td className="px-4 py-3 font-black text-slate-900">
-                          {fmt(r.today)}
+                          <div>{fmt(r.today)}</div>
+                          <div
+                            className={`text-xs font-semibold mt-0.5 ${isUp ? "text-green-600" : "text-red-500"}`}
+                          >
+                            {isUp ? "↑" : "↓"} {isUp ? "+" : ""}
+                            {fmt(Math.abs(chg))} ({isUp ? "+" : "-"}
+                            {Math.abs(Number(pct))}%)
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-slate-500">
                           {fmt(r.yesterday)}
                         </td>
                         <td
-                          className={`px-4 py-3 font-bold text-xs ${chg >= 0 ? "text-green-600" : "text-red-600"}`}
+                          className={`px-4 py-3 font-bold text-xs ${isUp ? "text-green-600" : "text-red-600"}`}
                         >
                           {fmtChg(chg)}
                         </td>
@@ -410,7 +621,7 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
                 Karat
               </p>
               <div className="flex gap-2">
-                {(["22K", "24K"] as const).map((k) => (
+                {(["22K", "24K", "18K"] as const).map((k) => (
                   <button
                     key={k}
                     type="button"
@@ -451,7 +662,7 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
                     {fmt(calcResult)}
                   </p>
                   <p className="text-xs text-amber-500 mt-1">
-                    At ₹{cityRates[calcCity][calcKarat].toLocaleString("en-IN")}
+                    At ₹{cityR[calcCity][calcKarat].toLocaleString("en-IN")}
                     /gram
                   </p>
                 </motion.div>
@@ -497,10 +708,13 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
                         City
                       </th>
                       <th className="px-4 py-2.5 text-left text-xs font-bold">
-                        22K (per gram)
+                        22K /g
                       </th>
                       <th className="px-4 py-2.5 text-left text-xs font-bold">
-                        24K (per gram)
+                        24K /g
+                      </th>
+                      <th className="px-4 py-2.5 text-left text-xs font-bold">
+                        18K /g
                       </th>
                     </tr>
                   </thead>
@@ -510,29 +724,40 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
                         {cityRateCity}
                       </td>
                       <td className="px-4 py-3 font-black text-teal-700">
-                        {fmt(cityRates[cityRateCity]["22K"])}
+                        {fmt(cityR[cityRateCity]["22K"])}
                       </td>
                       <td className="px-4 py-3 font-black text-orange-600">
-                        {fmt(cityRates[cityRateCity]["24K"])}
+                        {fmt(cityR[cityRateCity]["24K"])}
+                      </td>
+                      <td className="px-4 py-3 font-black text-yellow-600">
+                        {fmt(cityR[cityRateCity]["18K"])}
                       </td>
                     </tr>
                   </tbody>
                 </table>
-                <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="mt-3 grid grid-cols-3 gap-2">
                   <div className="bg-teal-50 border border-teal-100 rounded-xl p-3 text-center">
                     <p className="text-xs text-teal-600 font-semibold mb-0.5">
                       22K (10g)
                     </p>
-                    <p className="text-lg font-black text-teal-700">
-                      {fmt(cityRates[cityRateCity]["22K"] * 10)}
+                    <p className="text-base font-black text-teal-700">
+                      {fmt(cityR[cityRateCity]["22K"] * 10)}
                     </p>
                   </div>
                   <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 text-center">
                     <p className="text-xs text-orange-600 font-semibold mb-0.5">
                       24K (10g)
                     </p>
-                    <p className="text-lg font-black text-orange-700">
-                      {fmt(cityRates[cityRateCity]["24K"] * 10)}
+                    <p className="text-base font-black text-orange-700">
+                      {fmt(cityR[cityRateCity]["24K"] * 10)}
+                    </p>
+                  </div>
+                  <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-3 text-center">
+                    <p className="text-xs text-yellow-600 font-semibold mb-0.5">
+                      18K (10g)
+                    </p>
+                    <p className="text-base font-black text-yellow-700">
+                      {fmt(cityR[cityRateCity]["18K"] * 10)}
                     </p>
                   </div>
                 </div>
@@ -642,7 +867,10 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
         {[
           {
             label: "Silver Rate",
-            value: "₹245",
+            value:
+              silverRate !== null
+                ? `₹${silverRate.toLocaleString("en-IN")}`
+                : "₹245",
             unit: "per gram",
             emoji: "🥈",
             bg: "from-slate-100 to-gray-200",
@@ -694,7 +922,7 @@ function GoldRatesSection({ onApply }: { onApply: () => void }) {
 }
 
 // ─── Gold Loan Form ──────────────────────────────────────────────────────────
-const GOLD_PRICE_22K = 13315;
+const GOLD_PRICE_22K = 13460;
 const steps = [
   "Gold Details",
   "Loan Details",
@@ -704,7 +932,46 @@ const steps = [
 
 export default function GoldLoan() {
   const formRef = useRef<HTMLDivElement>(null);
+  const { rates, cityR, lastUpdated, isRefreshing, isLive, refresh } =
+    useGoldRates();
+  const [silverRate, setSilverRate] = useState<number | null>(null);
   const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    async function fetchSilver() {
+      try {
+        const res = await fetch(
+          `https://${RAPIDAPI_HOST}/silver_price_india_city_value/?city=Mumbai`,
+          {
+            headers: {
+              "x-rapidapi-key":
+                "547e59a0c9msh94218b69b03c6d0p13afcejsn056dd1d013c0",
+              "x-rapidapi-host": RAPIDAPI_HOST,
+            },
+          },
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        // Try common keys for silver per gram
+        const raw =
+          data?.silver_price ??
+          data?.price ??
+          data?.["1g"] ??
+          data?.rate ??
+          null;
+        const parsed =
+          raw !== null
+            ? Number.parseFloat(String(raw).replace(/[^0-9.]/g, ""))
+            : null;
+        if (parsed && !Number.isNaN(parsed) && parsed > 0) {
+          setSilverRate(Math.round(parsed));
+        }
+      } catch {
+        // Keep fallback ₹245
+      }
+    }
+    fetchSilver();
+  }, []);
   const [submitted, setSubmitted] = useState(false);
   const refId = `GL${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
@@ -894,7 +1161,16 @@ export default function GoldLoan() {
         </motion.div>
 
         {/* Gold Rates Section */}
-        <GoldRatesSection onApply={scrollToForm} />
+        <GoldRatesSection
+          onApply={scrollToForm}
+          rates={rates}
+          cityR={cityR}
+          lastUpdated={lastUpdated}
+          isRefreshing={isRefreshing}
+          isLive={isLive}
+          silverRate={silverRate}
+          onRefresh={refresh}
+        />
 
         {/* Form Section */}
         <div ref={formRef}>
@@ -1027,7 +1303,7 @@ export default function GoldLoan() {
                       ₹{estimatedValue.toLocaleString("en-IN")}
                     </p>
                     <p className="text-xs text-amber-500/70 mt-1">
-                      Based on ₹13,315/g for 22K · {weight}g at {purity}
+                      Based on ₹13,460/g for 22K · {weight}g at {purity}
                     </p>
                   </div>
                   <div>

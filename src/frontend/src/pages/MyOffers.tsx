@@ -403,13 +403,16 @@ export default function MyOffers() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
               whileHover={{ y: -4, scale: 1.01 }}
-              className={`bg-gradient-to-br ${o.gradient} rounded-2xl p-5 text-white relative overflow-hidden shadow-xl ${o.shadow}`}
+              className={`bg-gradient-to-br ${o.gradient} rounded-2xl p-3 text-white relative overflow-hidden shadow-xl ring-2 ring-white/20 ${o.shadow}`}
               data-ocid={`offers.recommended.item.${i + 1}`}
             >
-              <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/10" />
+              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10" />
               <div className="absolute -bottom-8 -left-4 w-24 h-24 rounded-full bg-white/5" />
 
               <div className="relative">
+                <span className="inline-block bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm mb-2">
+                  ⭐ Recommended
+                </span>
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-lg mb-2 border border-white/30">
@@ -428,7 +431,7 @@ export default function MyOffers() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-2xl text-white">
+                    <p className="font-black text-xl text-white">
                       ↗ {o.chance}%
                     </p>
                     <p className="text-[10px] text-white/70 uppercase">
@@ -455,7 +458,7 @@ export default function MyOffers() {
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <div>
                     <p className="text-[10px] text-white/60 uppercase">EMI</p>
-                    <p className="text-lg font-black text-white">
+                    <p className="text-base font-black text-white">
                       ₹{o.emi.toLocaleString("en-IN")}
                     </p>
                   </div>

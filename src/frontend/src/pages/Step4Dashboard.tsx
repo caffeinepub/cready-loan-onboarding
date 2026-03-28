@@ -469,13 +469,16 @@ export default function Step4Dashboard() {
                   whileDrag={{ scale: 0.97, rotate: 1 }}
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
-                  className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer flex-shrink-0 w-[280px]`}
+                  className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-4 text-white relative overflow-hidden cursor-pointer flex-shrink-0 w-[210px] ring-2 ring-white/20 shadow-xl`}
                   style={{ scrollSnapAlign: "start" }}
                   data-ocid={`dashboard.offer.${i + 1}`}
                 >
-                  <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+                  <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10" />
                   <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
                   <div className="relative">
+                    <span className="inline-block bg-white/25 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/40 mb-2">
+                      ⭐ Recommended
+                    </span>
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-2xl">{offer.icon}</span>
                       <span
@@ -548,12 +551,15 @@ export default function Step4Dashboard() {
                   scale: 1.03,
                   boxShadow: "0 20px 40px -10px rgba(0,0,0,0.25)",
                 }}
-                className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-5 text-white relative overflow-hidden cursor-pointer`}
+                className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-4 text-white relative overflow-hidden cursor-pointer ring-2 ring-white/20 shadow-xl`}
                 data-ocid={`dashboard.offer.${i + 1}`}
               >
-                <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
+                <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-white/10" />
                 <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/5" />
                 <div className="relative">
+                  <span className="inline-block bg-white/25 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full border border-white/40 mb-2">
+                    ⭐ Recommended
+                  </span>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-2xl">{offer.icon}</span>
                     <span
