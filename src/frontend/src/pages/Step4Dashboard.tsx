@@ -266,6 +266,355 @@ const fdCards = [
   },
 ];
 
+// Floating gold particle component
+function GoldParticle({
+  x,
+  y,
+  size,
+  delay,
+}: { x: string; y: string; size: number; delay: number }) {
+  return (
+    <motion.div
+      className="absolute rounded-full pointer-events-none"
+      style={{
+        left: x,
+        top: y,
+        width: size,
+        height: size,
+        background:
+          "radial-gradient(circle, #fbbf24 0%, #d97706 60%, transparent 100%)",
+        boxShadow: `0 0 ${size * 2}px rgba(251,191,36,0.6)`,
+      }}
+      animate={{
+        y: ["-10px", "10px", "-10px"],
+        opacity: [0.4, 0.9, 0.4],
+        scale: [1, 1.3, 1],
+      }}
+      transition={{
+        duration: 3 + delay,
+        repeat: Number.POSITIVE_INFINITY,
+        ease: "easeInOut",
+        delay,
+      }}
+    />
+  );
+}
+
+const GOLD_PARTICLES = [
+  { x: "8%", y: "15%", size: 6, delay: 0 },
+  { x: "92%", y: "20%", size: 4, delay: 0.8 },
+  { x: "5%", y: "70%", size: 8, delay: 1.4 },
+  { x: "88%", y: "65%", size: 5, delay: 0.4 },
+  { x: "15%", y: "45%", size: 3, delay: 2.1 },
+  { x: "80%", y: "42%", size: 7, delay: 1.7 },
+  { x: "50%", y: "5%", size: 4, delay: 0.6 },
+  { x: "25%", y: "88%", size: 5, delay: 2.5 },
+  { x: "70%", y: "85%", size: 3, delay: 1.2 },
+];
+
+function GoldLoanPopup({ onClose }: { onClose: () => void }) {
+  const navigate = useNavigate();
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      style={{
+        backdropFilter: "blur(12px)",
+        backgroundColor: "rgba(0,0,0,0.75)",
+      }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.75, opacity: 0, y: 40 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.88, opacity: 0, y: 20 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-md overflow-hidden rounded-3xl"
+        style={{
+          background:
+            "linear-gradient(145deg, #0a0a0f 0%, #12100a 40%, #1a1205 100%)",
+          border: "1px solid rgba(251,191,36,0.25)",
+          boxShadow:
+            "0 0 80px rgba(251,191,36,0.15), 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(251,191,36,0.1)",
+        }}
+        data-ocid="gold_loan_popup.modal"
+      >
+        {/* Radial glow at top */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-40 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 0%, rgba(251,191,36,0.25) 0%, transparent 70%)",
+          }}
+        />
+
+        {/* Floating particles */}
+        {GOLD_PARTICLES.map((p) => (
+          <GoldParticle key={`${p.x}-${p.y}`} {...p} />
+        ))}
+
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          data-ocid="gold_loan_popup.close_button"
+          className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-all"
+          style={{
+            background: "rgba(255,255,255,0.08)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            color: "rgba(255,255,255,0.6)",
+          }}
+          aria-label="Close"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M1 1l12 12M13 1L1 13"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+
+        <div className="relative px-6 pt-8 pb-6">
+          {/* Gold icon with halo */}
+          <div className="flex justify-center mb-5">
+            <div className="relative">
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                animate={{ scale: [1, 1.6, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }}
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(251,191,36,0.5) 0%, transparent 70%)",
+                  width: "100px",
+                  height: "100px",
+                  top: "-20px",
+                  left: "-20px",
+                }}
+              />
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0, 0.3] }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                  delay: 0.5,
+                }}
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(245,158,11,0.6) 0%, transparent 70%)",
+                  width: "100px",
+                  height: "100px",
+                  top: "-20px",
+                  left: "-20px",
+                }}
+              />
+              <motion.div
+                className="relative w-[60px] h-[60px] rounded-2xl flex items-center justify-center text-3xl"
+                animate={{ rotateY: [0, 10, -10, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }}
+                style={{
+                  background:
+                    "linear-gradient(135deg, #fbbf24 0%, #f59e0b 40%, #d97706 70%, #92400e 100%)",
+                  boxShadow:
+                    "0 8px 32px rgba(251,191,36,0.5), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3)",
+                }}
+              >
+                🪙
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Headline */}
+          <div className="text-center mb-2">
+            <motion.h2
+              className="text-3xl font-black leading-tight"
+              style={{
+                background:
+                  "linear-gradient(135deg, #fbbf24 0%, #f59e0b 40%, #fde68a 60%, #d97706 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+              transition={{
+                duration: 4,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+              }}
+            >
+              Unlock Instant
+            </motion.h2>
+            <motion.h2
+              className="text-3xl font-black leading-tight"
+              style={{
+                background:
+                  "linear-gradient(135deg, #fde68a 0%, #fbbf24 50%, #f59e0b 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Gold Loan ✨
+            </motion.h2>
+          </div>
+
+          {/* Subtext */}
+          <p
+            className="text-center text-sm mb-5"
+            style={{ color: "rgba(255,255,255,0.55)" }}
+          >
+            Get up to{" "}
+            <span style={{ color: "#fbbf24", fontWeight: 700 }}>₹50 Lakhs</span>{" "}
+            against your gold. Lowest interest rates, instant disbursal.
+          </p>
+
+          {/* Benefit pills */}
+          <div className="flex flex-wrap justify-center gap-2 mb-5">
+            {[
+              "✓ 0.79% Monthly Rate",
+              "✓ Instant Disbursal",
+              "✓ No Income Proof",
+            ].map((pill) => (
+              <motion.span
+                key={pill}
+                whileHover={{ scale: 1.05 }}
+                className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgba(251,191,36,0.15) 0%, rgba(217,119,6,0.1) 100%)",
+                  border: "1px solid rgba(251,191,36,0.3)",
+                  color: "#fbbf24",
+                }}
+              >
+                {pill}
+              </motion.span>
+            ))}
+          </div>
+
+          {/* Live rate ticker */}
+          <div
+            className="flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 mb-5"
+            style={{
+              background: "rgba(251,191,36,0.06)",
+              border: "1px solid rgba(251,191,36,0.15)",
+            }}
+          >
+            <motion.div
+              className="w-2 h-2 rounded-full"
+              style={{ background: "#22c55e" }}
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY }}
+            />
+            <span
+              className="text-xs font-semibold"
+              style={{ color: "rgba(255,255,255,0.7)" }}
+            >
+              24K Gold Rate:
+            </span>
+            <span className="text-xs font-black" style={{ color: "#fbbf24" }}>
+              ₹14,809/g
+            </span>
+            <span
+              className="text-[10px]"
+              style={{ color: "rgba(255,255,255,0.4)" }}
+            >
+              • Live 🟢
+            </span>
+          </div>
+
+          {/* CTA Button */}
+          <motion.button
+            type="button"
+            onClick={() => {
+              onClose();
+              navigate("/gold-loan");
+            }}
+            data-ocid="gold_loan_popup.primary_button"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            className="relative w-full overflow-hidden rounded-2xl py-4 font-black text-base text-white mb-3"
+            style={{
+              background:
+                "linear-gradient(135deg, #f59e0b 0%, #d97706 40%, #b45309 100%)",
+              boxShadow:
+                "0 8px 32px rgba(245,158,11,0.45), 0 2px 8px rgba(0,0,0,0.3)",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {/* Shimmer sweep */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background:
+                  "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
+              }}
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{
+                duration: 2,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+                repeatDelay: 1,
+              }}
+            />
+            <span className="relative">Apply Now →</span>
+          </motion.button>
+
+          {/* Maybe Later */}
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={onClose}
+              data-ocid="gold_loan_popup.cancel_button"
+              className="text-xs transition-colors"
+              style={{ color: "rgba(255,255,255,0.3)" }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLButtonElement).style.color =
+                  "rgba(255,255,255,0.55)";
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLButtonElement).style.color =
+                  "rgba(255,255,255,0.3)";
+              }}
+            >
+              Maybe Later
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom gold accent line */}
+        <div
+          className="h-1 w-full"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 0%, #f59e0b 30%, #fbbf24 50%, #d97706 70%, transparent 100%)",
+          }}
+        />
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function Step4Dashboard() {
   const navigate = useNavigate();
   const { name } = useApp();
@@ -277,6 +626,7 @@ export default function Step4Dashboard() {
   const [selectedFDCardIdx, setSelectedFDCardIdx] = useState<number | null>(
     null,
   );
+  const [showGoldPopup, setShowGoldPopup] = useState(false);
 
   const monthly = rate / 12 / 100;
   const emi =
@@ -325,6 +675,17 @@ export default function Step4Dashboard() {
   useEffect(() => {
     const t = setTimeout(() => setToastVisible(false), 3500);
     return () => clearTimeout(t);
+  }, []);
+
+  // Gold Loan popup: show once after 10 seconds
+  useEffect(() => {
+    const alreadyShown = localStorage.getItem("goldLoanPopupShown");
+    if (alreadyShown) return;
+    const timer = setTimeout(() => {
+      setShowGoldPopup(true);
+      localStorage.setItem("goldLoanPopupShown", "true");
+    }, 10000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -978,6 +1339,13 @@ export default function Step4Dashboard() {
             : null
         }
       />
+
+      {/* Gold Loan Popup */}
+      <AnimatePresence>
+        {showGoldPopup && (
+          <GoldLoanPopup onClose={() => setShowGoldPopup(false)} />
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   );
 }

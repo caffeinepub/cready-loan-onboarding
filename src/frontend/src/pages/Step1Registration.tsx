@@ -10,10 +10,11 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../App";
+import StepIndicator from "../components/StepIndicator";
 
 const benefits = [
   {
@@ -67,6 +68,68 @@ const consentLabels = [
     text: "I hereby consent to receive loan related communication from Cready or its authorized representatives",
   },
 ];
+
+function CustomCheckbox({
+  id,
+  checked,
+  onChange,
+  "data-ocid": dataOcid,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: () => void;
+  "data-ocid"?: string;
+}) {
+  return (
+    <span className="relative flex-shrink-0 mt-0.5">
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        data-ocid={dataOcid}
+        className="sr-only peer"
+      />
+      <span
+        aria-hidden="true"
+        className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${
+          checked
+            ? "border-transparent shadow-sm shadow-indigo-300"
+            : "border-slate-300 bg-white hover:border-indigo-300"
+        }`}
+        style={
+          checked
+            ? { background: "linear-gradient(135deg, #6366f1, #7c3aed)" }
+            : {}
+        }
+      >
+        <AnimatePresence>
+          {checked && (
+            <motion.svg
+              key="check"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              className="w-3 h-3 text-white"
+              fill="none"
+              viewBox="0 0 12 12"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 6l3 3 5-5"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </motion.svg>
+          )}
+        </AnimatePresence>
+      </span>
+    </span>
+  );
+}
 
 export default function Step1Registration() {
   const navigate = useNavigate();
@@ -288,6 +351,16 @@ export default function Step1Registration() {
 
         <div className="flex-1 flex items-center justify-center px-6 py-8 lg:px-12">
           <div className="w-full max-w-md">
+            {/* Step Indicator */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="mb-5"
+            >
+              <StepIndicator currentStep={1} />
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -414,9 +487,8 @@ export default function Step1Registration() {
               >
                 {consentLabels.map((item, i) => (
                   <div key={item.id} className="flex items-start gap-3">
-                    <input
+                    <CustomCheckbox
                       id={item.id}
-                      type="checkbox"
                       checked={checks[i]}
                       onChange={() =>
                         setChecks((c) =>
@@ -424,7 +496,6 @@ export default function Step1Registration() {
                         )
                       }
                       data-ocid={`registration.consent.checkbox.${i + 1}`}
-                      className="mt-0.5 accent-indigo-500 w-4 h-4 flex-shrink-0 cursor-pointer"
                     />
                     <label
                       htmlFor={item.id}

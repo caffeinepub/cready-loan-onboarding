@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import StepIndicator from "../components/StepIndicator";
 
 const benefits = [
   {
@@ -41,14 +42,16 @@ const stats = [
 
 export default function Step2OTP() {
   const navigate = useNavigate();
-  const [digits, setDigits] = useState(["", "", "", ""]);
+  const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(25);
   const [toast, setToast] = useState(true);
   const r0 = useRef<HTMLInputElement>(null);
   const r1 = useRef<HTMLInputElement>(null);
   const r2 = useRef<HTMLInputElement>(null);
   const r3 = useRef<HTMLInputElement>(null);
-  const refs = [r0, r1, r2, r3];
+  const r4 = useRef<HTMLInputElement>(null);
+  const r5 = useRef<HTMLInputElement>(null);
+  const refs = [r0, r1, r2, r3, r4, r5];
 
   useEffect(() => {
     const t = setInterval(() => setTimer((v) => (v > 0 ? v - 1 : 0)), 1000);
@@ -64,7 +67,7 @@ export default function Step2OTP() {
     const v = val.replace(/\D/, "").slice(-1);
     const next = digits.map((d, idx) => (idx === i ? v : d));
     setDigits(next);
-    if (v && i < 3) refs[i + 1].current?.focus();
+    if (v && i < 5) refs[i + 1].current?.focus();
     if (next.every((d) => d !== ""))
       setTimeout(() => navigate("/analyzing"), 300);
   }
@@ -273,6 +276,16 @@ export default function Step2OTP() {
             <span className="font-bold text-indigo-700 text-base">cready</span>
           </div>
 
+          {/* Step Indicator */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-5"
+          >
+            <StepIndicator currentStep={2} />
+          </motion.div>
+
           {/* Heading */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -289,10 +302,10 @@ export default function Step2OTP() {
 
           {/* OTP inputs */}
           <p className="text-sm font-semibold text-slate-700 mb-4">
-            Enter 4-digit OTP
+            Enter 6-digit OTP
           </p>
-          <div className="flex gap-3 mb-4" data-ocid="otp.input">
-            {([0, 1, 2, 3] as const).map((i) => (
+          <div className="flex gap-2 mb-4" data-ocid="otp.input">
+            {([0, 1, 2, 3, 4, 5] as const).map((i) => (
               <motion.input
                 key={`digit-position-${i}`}
                 ref={refs[i]}
@@ -306,7 +319,7 @@ export default function Step2OTP() {
                 value={digits[i]}
                 onChange={(e) => handleDigit(i, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(i, e)}
-                className="w-16 h-16 text-center text-2xl font-bold bg-slate-50 border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-indigo-400 text-slate-800 transition-colors"
+                className="w-12 h-14 text-center text-xl font-bold bg-slate-50 border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-indigo-400 text-slate-800 transition-colors"
               />
             ))}
           </div>

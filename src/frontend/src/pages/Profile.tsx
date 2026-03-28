@@ -1,5 +1,6 @@
+import { Camera } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 
 const kycItems = [
@@ -28,6 +29,22 @@ const employmentTypeOptions = [
 
 export default function Profile() {
   const [editing, setEditing] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(
+    localStorage.getItem("cready_profile_image") ?? null,
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target?.result as string;
+      localStorage.setItem("cready_profile_image", base64);
+      setProfileImage(base64);
+    };
+    reader.readAsDataURL(file);
+  }
   const [name, setName] = useState("Bharat Bhushan");
   const [email, setEmail] = useState("bharat.sharma@gmail.com");
   const [mobile, setMobile] = useState("+91 98765 43210");
@@ -79,25 +96,51 @@ export default function Profile() {
             transition={{ delay: 0.1 }}
             className="bg-gradient-to-br from-[#0f172a] to-indigo-900 rounded-2xl p-6 text-white flex flex-col items-center"
           >
-            <div className="relative mb-4">
-              <div className="w-20 h-20 rounded-full bg-indigo-500 flex items-center justify-center text-3xl font-black">
-                B
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+              data-ocid="profile.upload_button"
+            />
+            <button
+              type="button"
+              className="relative mb-2 cursor-pointer group bg-transparent border-0 p-0"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Change profile photo"
+            >
+              <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-indigo-500/40 transition-all group-hover:ring-indigo-400/70">
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-indigo-500 flex items-center justify-center text-3xl font-black">
+                    B
+                  </div>
+                )}
               </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs">
-                ✓
+              <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center border-2 border-[#0f172a] shadow-lg">
+                <Camera className="w-3.5 h-3.5 text-white" />
               </div>
-            </div>
+            </button>
+            <p className="text-slate-400 text-xs mb-2">Tap to change photo</p>
             <p className="text-xl font-black">{name}</p>
             <p className="text-indigo-300 text-sm mt-1">Premium Member</p>
             <div className="mt-4 w-full">
               <div className="flex justify-between text-xs mb-1">
                 <span className="text-slate-400">Profile Completion</span>
-                <span className="font-bold">92%</span>
+                <span className="font-bold">
+                  {profileImage ? "100%" : "92%"}
+                </span>
               </div>
               <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: "92%" }}
+                  animate={{ width: profileImage ? "100%" : "92%" }}
                   transition={{ duration: 1.2, delay: 0.5 }}
                   className="h-full bg-gradient-to-r from-indigo-400 to-teal-400 rounded-full"
                 />
