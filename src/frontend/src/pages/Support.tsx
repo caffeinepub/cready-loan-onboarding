@@ -68,11 +68,11 @@ export default function Support() {
 
   return (
     <DashboardLayout>
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 flex items-center justify-between"
+          className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         >
           <div>
             <h1 className="text-3xl font-black text-slate-800">
@@ -86,13 +86,13 @@ export default function Support() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => setChatOpen(true)}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/25 text-sm"
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-indigo-500/25 text-sm w-full sm:w-auto"
           >
             💬 Start Live Chat
           </motion.button>
         </motion.div>
 
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           {[
             {
               label: "Open Tickets",
@@ -131,7 +131,7 @@ export default function Support() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -229,7 +229,7 @@ export default function Support() {
               initial={{ opacity: 0, y: 40, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 40, scale: 0.9 }}
-              className="fixed bottom-8 right-8 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50"
+              className="fixed bottom-0 right-0 sm:bottom-8 sm:right-8 w-full sm:w-80 bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50"
             >
               <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">

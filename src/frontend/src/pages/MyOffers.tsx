@@ -112,12 +112,48 @@ const matched = [
 ];
 
 const unmatched = [
-  { name: "Yes Bank", reason: "Low income proof", icon: "🏛️" },
-  { name: "IndusInd Bank", reason: "Serviceable area", icon: "🏦" },
-  { name: "RBL Bank", reason: "Existing application", icon: "🏢" },
-  { name: "Karnataka Bank", reason: "Eligibility criteria", icon: "🏗️" },
-  { name: "Federal Bank", reason: "Credit history", icon: "🏦" },
-  { name: "South Indian Bank", reason: "Income threshold", icon: "🏛️" },
+  {
+    name: "Yes Bank",
+    reason: "Low income proof",
+    icon: "🏛️",
+    color: "from-rose-500 to-pink-600",
+    shadow: "shadow-rose-500/30",
+  },
+  {
+    name: "IndusInd Bank",
+    reason: "Serviceable area",
+    icon: "🏦",
+    color: "from-violet-500 to-purple-600",
+    shadow: "shadow-violet-500/30",
+  },
+  {
+    name: "RBL Bank",
+    reason: "Existing application",
+    icon: "🏢",
+    color: "from-amber-500 to-orange-600",
+    shadow: "shadow-amber-500/30",
+  },
+  {
+    name: "Karnataka Bank",
+    reason: "Eligibility criteria",
+    icon: "🏗️",
+    color: "from-teal-500 to-cyan-600",
+    shadow: "shadow-teal-500/30",
+  },
+  {
+    name: "Federal Bank",
+    reason: "Credit history",
+    icon: "🏦",
+    color: "from-blue-500 to-indigo-600",
+    shadow: "shadow-blue-500/30",
+  },
+  {
+    name: "South Indian Bank",
+    reason: "Income threshold",
+    icon: "🏛️",
+    color: "from-emerald-500 to-green-600",
+    shadow: "shadow-emerald-500/30",
+  },
 ];
 
 const reasonTips: Record<string, string[]> = {
@@ -601,44 +637,51 @@ export default function MyOffers() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 + i * 0.06 }}
-                  className="flex-shrink-0 snap-start w-52 bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+                  whileHover={{ y: -3, scale: 1.02 }}
+                  className={`flex-shrink-0 snap-start w-52 bg-gradient-to-br ${lender.color} rounded-2xl p-4 shadow-lg ${lender.shadow} relative overflow-hidden`}
                   data-ocid={`offers.unmatched.item.${i + 1}`}
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-xl">
-                      {lender.icon}
+                  {/* Decorative circles */}
+                  <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/10" />
+                  <div className="absolute -bottom-5 -left-2 w-14 h-14 rounded-full bg-white/5" />
+
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-xl border border-white/30">
+                        {lender.icon}
+                      </div>
+                      <span className="w-7 h-7 rounded-full bg-black/20 border border-white/20 flex items-center justify-center text-sm">
+                        🔒
+                      </span>
                     </div>
-                    <span className="w-6 h-6 rounded-full bg-red-50 border border-red-200 flex items-center justify-center text-[10px]">
-                      🔒
-                    </span>
+                    <h3 className="font-bold text-white text-sm mb-0.5">
+                      {lender.name}
+                    </h3>
+                    <p className="text-[10px] text-white/70 mb-3">
+                      {lender.reason}
+                    </p>
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <span className="flex-1 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                        <span
+                          className="block h-full bg-white/50 rounded-full"
+                          style={{ width: "30%" }}
+                        />
+                      </span>
+                      <span className="text-[10px] text-white/80 font-semibold">
+                        Not Eligible
+                      </span>
+                    </div>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => setSelectedLender(lender)}
+                      data-ocid={`offers.unmatched_check_later.${i + 1}`}
+                      className="mt-1 w-full py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-xl text-center text-xs text-white font-semibold transition-all"
+                    >
+                      📋 Check Later
+                    </motion.button>
                   </div>
-                  <h3 className="font-bold text-slate-800 text-sm mb-1">
-                    {lender.name}
-                  </h3>
-                  <p className="text-[10px] text-slate-400 mb-3">
-                    {lender.reason}
-                  </p>
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <span className="flex-1 h-1 bg-red-100 rounded-full overflow-hidden">
-                      <span
-                        className="block h-full bg-red-300 rounded-full"
-                        style={{ width: "30%" }}
-                      />
-                    </span>
-                    <span className="text-[10px] text-red-400 font-semibold">
-                      Not Eligible
-                    </span>
-                  </div>
-                  <motion.button
-                    type="button"
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => setSelectedLender(lender)}
-                    data-ocid={`offers.unmatched_check_later.${i + 1}`}
-                    className="mt-1 w-full py-2 bg-gradient-to-r from-indigo-50 to-teal-50 border border-indigo-200 hover:border-indigo-400 rounded-xl text-center text-xs text-indigo-600 font-semibold transition-all hover:shadow-sm hover:shadow-indigo-100"
-                  >
-                    📋 Check Later
-                  </motion.button>
                 </motion.div>
               ))}
             </div>

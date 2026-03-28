@@ -298,9 +298,9 @@ function EMICalc() {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-8">
         {/* Left: Sliders */}
-        <div className="col-span-3 space-y-7">
+        <div className="md:col-span-3 space-y-7">
           {/* Loan Amount */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -406,7 +406,7 @@ function EMICalc() {
         </div>
 
         {/* Right: Donut + Results */}
-        <div className="col-span-2 flex flex-col items-center">
+        <div className="md:col-span-2 flex flex-col items-center">
           {/* Bar Chart */}
           <VerticalBarChart
             principal={loan}
@@ -562,8 +562,8 @@ function EligibilityCalc() {
   const eligible = (maxEMI * 48) / 1.2;
 
   return (
-    <div className="grid grid-cols-5 gap-6">
-      <div className="col-span-3 space-y-5">
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="md:col-span-3 space-y-5">
         {[
           {
             label: "Monthly Income",
@@ -609,7 +609,7 @@ function EligibilityCalc() {
           </p>
         </div>
       </div>
-      <div className="col-span-2 bg-gradient-to-br from-teal-600 to-indigo-600 rounded-2xl p-5 text-white flex flex-col justify-center">
+      <div className="md:col-span-2 bg-gradient-to-br from-teal-600 to-indigo-600 rounded-2xl p-5 text-white flex flex-col justify-center">
         <p className="text-xs font-bold uppercase tracking-wider text-teal-200 mb-1">
           Max Loan Eligibility
         </p>
@@ -735,7 +735,7 @@ export default function Calculators() {
 
   return (
     <DashboardLayout>
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -749,14 +749,14 @@ export default function Calculators() {
           </p>
         </motion.div>
 
-        <div className="flex gap-2 mb-8">
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 md:flex-wrap">
           {tabs.map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
               data-ocid={`calculators.${tab.toLowerCase().replace(/ /g, "_")}.tab`}
-              className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+              className={`px-4 py-2.5 rounded-xl font-semibold text-sm transition-all whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
                   : "bg-white text-slate-600 border border-slate-200 hover:border-indigo-300"

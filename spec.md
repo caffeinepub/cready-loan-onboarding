@@ -1,31 +1,32 @@
 # Cready Loan Onboarding
 
 ## Current State
-Full-stack fintech onboarding app with 7-step journey, dashboard with sidebar pages, credit report, IFSC finder, gold loan, calculators, profile, and my offers. Mobile view is optimized for dashboard home. All routing is fixed. Motion library (v12) is available.
+Credit Report page has a light-theme SVG arc gauge (score 777), 3D floating credit card, animated 6-month score history, Boost to 800+ challenge, FD-backed credit card promotions, and drill-down Report Insights panels.
 
 ## Requested Changes (Diff)
 
 ### Add
-- PageTransition wrapper component using `motion` library with slide-in/out animation (x-axis slide) for cinematic feel
-- Wrap every route page with PageTransition
+- A 3D Milestone section on the Credit Report page, inspired by CRED's dashboard milestone feature
+- Milestones represent credit score achievement levels (e.g., "Credit Rookie" → "Credit Builder" → "Score Master" → "Credit Legend" → "Score Elite")
+- Each milestone is a 3D animated card/badge with a glowing trophy/badge icon, title, required score threshold, and a locked/unlocked state
+- Current score (777) determines which milestones are unlocked
+- Unlocked milestones have a vibrant gradient glow, animated shimmer, and a celebratory particle/confetti burst on reveal
+- Locked milestones are dimmed with a subtle locked overlay
+- Horizontal scrollable 3D carousel with perspective tilt on hover
+- Fully consistent with Cready's premium light-theme look: teal/indigo gradients, glassmorphism, smooth transitions
 
 ### Modify
-- Apply PageTransition to all journey steps: Step1-Step7, MyOffers, Dashboard, Review, Success
-- CreditReport: Mobile layout fixes — score hero stacks properly, gauge scales down, cards go single column, expandable panels are full-width
-- MyOffers: Mobile fixes — cards single column, carousels scroll properly, approval bars fit, feature pills wrap
-- Profile: Mobile fixes — form fields full-width, completion ring centers, KYC badges wrap
-- GoldLoan: Mobile fixes — gold rate tables responsive, calculator inputs stack, live rates grid single-column on mobile, form steps full-width
-- IFSCFinder: Mobile fixes — two-column layout collapses to single column, dropdowns full-width, result table scrollable horizontally
+- Insert the Milestone section in CreditReport.tsx, between the score hero and the Report Insights section (or below the 6-month history chart)
 
 ### Remove
 - Nothing removed
 
 ## Implementation Plan
-1. Create `src/frontend/src/components/PageTransition.tsx` — uses `motion.div` with `initial={x:60, opacity:0}`, `animate={x:0, opacity:1}`, `exit={x:-60, opacity:0}`, ease transition ~0.35s
-2. Update App.tsx: wrap `<Routes>` with `<AnimatePresence mode="wait">`, use `location` key for transitions
-3. Wrap each page's root element with `<PageTransition>` OR apply motion props at page level
-4. Mobile audit and fix for CreditReport.tsx — add responsive classes throughout
-5. Mobile audit and fix for MyOffers.tsx
-6. Mobile audit and fix for Profile.tsx
-7. Mobile audit and fix for GoldLoan.tsx
-8. Mobile audit and fix for IFSCFinder.tsx
+1. Define milestone data: 5 milestones with score thresholds, icons (SVG/emoji), gradient colors, and unlock status based on score 777
+2. Build a `CreditMilestones3D` component with:
+   - Horizontal scrollable container with CSS perspective for 3D card tilt
+   - Each card: glassmorphism background, animated border glow, 3D transform on hover, shimmer sweep
+   - Unlocked cards: vibrant teal/indigo/violet gradient glow + confetti burst animation on mount
+   - Locked cards: grayscale overlay with lock icon
+   - Score progress bar below the milestone row showing how far to the next milestone
+3. Mount the component in CreditReport.tsx after the score history section

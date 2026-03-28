@@ -491,7 +491,9 @@ export default function IFSCFinder() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <h1 className="text-3xl font-black text-slate-800">IFSC Finder</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-slate-800">
+            IFSC Finder
+          </h1>
           <p className="text-slate-500 mt-1 text-sm">
             Instant bank branch lookup — verified IFSC & MICR codes across India
           </p>
@@ -530,7 +532,7 @@ export default function IFSCFinder() {
                   </span>
                 </div>
               </div>
-              <div className="px-6 py-5">
+              <div className="px-4 sm:px-6 py-4 sm:py-5">
                 <h2 className="text-xl font-black text-slate-800 mb-2">
                   Search IFSC &amp; MICR
                 </h2>
@@ -766,7 +768,7 @@ export default function IFSCFinder() {
               <div className="px-5 py-4 border-b border-slate-100 flex justify-end">
                 <button
                   type="button"
-                  className="text-xs font-bold text-violet-700 border border-violet-200 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-full transition-colors"
+                  className="text-xs font-bold text-violet-700 border border-violet-200 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg transition-colors text-center leading-tight"
                   data-ocid="ifsc.login.button"
                 >
                   Existing User? Login to Resume Journey

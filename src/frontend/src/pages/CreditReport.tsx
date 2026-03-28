@@ -342,6 +342,453 @@ function ScoreBooster() {
   );
 }
 
+// ─── Credit Milestones 3D ─────────────────────────────────────────────────────
+const MILESTONES = [
+  {
+    id: 1,
+    title: "Credit Rookie",
+    threshold: 300,
+    icon: "🌱",
+    gradient: "from-slate-400 to-slate-600",
+    glowColor: "rgba(100,116,139,0.5)",
+  },
+  {
+    id: 2,
+    title: "Credit Builder",
+    threshold: 650,
+    icon: "🏗️",
+    gradient: "from-amber-400 to-orange-500",
+    glowColor: "rgba(245,158,11,0.5)",
+  },
+  {
+    id: 3,
+    title: "Score Master",
+    threshold: 750,
+    icon: "⭐",
+    gradient: "from-teal-400 to-cyan-600",
+    glowColor: "rgba(20,184,166,0.5)",
+  },
+  {
+    id: 4,
+    title: "Credit Legend",
+    threshold: 780,
+    icon: "🏆",
+    gradient: "from-indigo-500 to-violet-600",
+    glowColor: "rgba(99,102,241,0.5)",
+  },
+  {
+    id: 5,
+    title: "Score Elite",
+    threshold: 820,
+    icon: "💎",
+    gradient: "from-rose-500 to-pink-600",
+    glowColor: "rgba(244,63,94,0.5)",
+  },
+];
+
+const CURRENT_SCORE = 777;
+const MILESTONE_STYLES = `
+@keyframes milestoneShimmer {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+@keyframes milestoneFloat {
+  0%, 100% { transform: translateY(0px) scale(1) rotate(-3deg); }
+  50% { transform: translateY(-6px) scale(1.08) rotate(3deg); }
+}
+@keyframes milestoneReveal {
+  0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0px); }
+}
+@keyframes milestonePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20,184,166,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(20,184,166,0); }
+}
+`;
+
+function MilestoneCard({
+  m,
+  index,
+  isUnlocked,
+}: { m: (typeof MILESTONES)[0]; index: number; isUnlocked: boolean }) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0, active: false });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+    setTilt({ x: -dy * 15, y: dx * 15, active: true });
+  };
+
+  const handleMouseLeave = () => setTilt({ x: 0, y: 0, active: false });
+
+  const progressPct = Math.min(
+    100,
+    Math.max(
+      0,
+      ((CURRENT_SCORE - (MILESTONES[index - 1]?.threshold ?? 300)) /
+        (m.threshold - (MILESTONES[index - 1]?.threshold ?? 300))) *
+        100,
+    ),
+  );
+
+  return (
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        perspective: "800px",
+        flexShrink: 0,
+        scrollSnapAlign: "center",
+      }}
+    >
+      <div
+        style={{
+          width: "clamp(160px, 18vw, 200px)",
+          height: "clamp(200px, 24vw, 240px)",
+          transform: tilt.active
+            ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale(1.03)`
+            : "rotateX(0deg) rotateY(0deg) scale(1)",
+          transition: tilt.active
+            ? "transform 0.1s ease-out"
+            : "transform 0.4s ease-out",
+          transformStyle: "preserve-3d",
+          animation: isUnlocked
+            ? `milestoneReveal 0.5s ease-out ${index * 0.1}s both`
+            : undefined,
+          opacity: isUnlocked ? 1 : 0.55,
+          filter: isUnlocked ? "none" : "grayscale(0.4)",
+          borderRadius: "1rem",
+          background: "rgba(255,255,255,0.7)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          border: isUnlocked
+            ? "1.5px solid rgba(255,255,255,0.6)"
+            : "1.5px solid rgba(200,200,200,0.3)",
+          boxShadow: isUnlocked
+            ? `0 0 0 1px rgba(255,255,255,0.4), 0 8px 32px ${m.glowColor}, 0 2px 8px rgba(0,0,0,0.08)`
+            : "0 4px 16px rgba(0,0,0,0.06)",
+          overflow: "hidden",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+          padding: "16px 12px",
+          cursor: isUnlocked ? "default" : "not-allowed",
+        }}
+      >
+        {/* Shimmer sweep on unlocked */}
+        {isUnlocked && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.45) 50%, transparent 70%)",
+              animation: "milestoneShimmer 3s ease-in-out infinite",
+              animationDelay: `${index * 0.6}s`,
+              pointerEvents: "none",
+            }}
+          />
+        )}
+
+        {/* Gradient orb behind icon */}
+        <div
+          className={`bg-gradient-to-br ${m.gradient}`}
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 26,
+            boxShadow: isUnlocked ? `0 4px 16px ${m.glowColor}` : "none",
+            animation: isUnlocked
+              ? "milestoneFloat 3s ease-in-out infinite"
+              : undefined,
+            animationDelay: `${index * 0.4}s`,
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          {isUnlocked ? m.icon : "🔒"}
+        </div>
+
+        {/* Title */}
+        <div style={{ textAlign: "center", zIndex: 1 }}>
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: 13,
+              color: isUnlocked ? "#1e293b" : "#94a3b8",
+              lineHeight: 1.2,
+              marginBottom: 2,
+            }}
+          >
+            {m.title}
+          </div>
+          <div style={{ fontSize: 11, color: "#94a3b8" }}>
+            {isUnlocked ? `From ${m.threshold}+` : "Score needed"}
+          </div>
+        </div>
+
+        {/* Badge */}
+        {isUnlocked ? (
+          <div
+            style={{
+              background: "linear-gradient(135deg, #0d9488, #0891b2)",
+              color: "#fff",
+              fontSize: 10,
+              fontWeight: 700,
+              padding: "3px 10px",
+              borderRadius: 999,
+              letterSpacing: "0.05em",
+              zIndex: 1,
+              animation: "milestonePulse 2s ease-in-out infinite",
+              animationDelay: `${index * 0.3}s`,
+            }}
+          >
+            Unlocked ✓
+          </div>
+        ) : (
+          <div
+            style={{
+              background: "rgba(148,163,184,0.15)",
+              color: "#94a3b8",
+              fontSize: 10,
+              fontWeight: 600,
+              padding: "3px 10px",
+              borderRadius: 999,
+              border: "1px solid rgba(148,163,184,0.25)",
+              zIndex: 1,
+            }}
+          >
+            {m.threshold} pts
+          </div>
+        )}
+
+        {/* Mini progress bar for partially-unlocked */}
+        {!isUnlocked &&
+          index > 0 &&
+          CURRENT_SCORE > MILESTONES[index - 1].threshold && (
+            <div style={{ width: "80%", zIndex: 1 }}>
+              <div
+                style={{
+                  background: "rgba(148,163,184,0.2)",
+                  borderRadius: 999,
+                  height: 4,
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  className={`bg-gradient-to-r ${m.gradient}`}
+                  style={{
+                    height: "100%",
+                    width: `${progressPct}%`,
+                    borderRadius: 999,
+                    transition: "width 1s ease-out",
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  fontSize: 9,
+                  color: "#94a3b8",
+                  textAlign: "center",
+                  marginTop: 2,
+                }}
+              >
+                {Math.round(progressPct)}% there
+              </div>
+            </div>
+          )}
+      </div>
+    </div>
+  );
+}
+
+function CreditMilestones3D() {
+  const minScore = 300;
+  const maxScore = 850;
+  const progressPct =
+    ((CURRENT_SCORE - minScore) / (maxScore - minScore)) * 100;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.45 }}
+      className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6"
+    >
+      <style>{MILESTONE_STYLES}</style>
+
+      {/* Header */}
+      <div className="px-5 pt-5 pb-3">
+        <div className="flex items-center gap-2 mb-1">
+          <span style={{ fontSize: 20 }}>🏆</span>
+          <h3
+            style={{
+              background: "linear-gradient(135deg, #0d9488, #6366f1)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              fontWeight: 800,
+              fontSize: 16,
+              margin: 0,
+            }}
+          >
+            Your Credit Journey
+          </h3>
+        </div>
+        <p className="text-gray-400 text-xs">
+          Milestones earned based on your score ·{" "}
+          {MILESTONES.filter((m) => CURRENT_SCORE >= m.threshold).length} of{" "}
+          {MILESTONES.length} unlocked
+        </p>
+      </div>
+
+      {/* Cards row */}
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          overflowX: "auto",
+          scrollSnapType: "x mandatory",
+          padding: "8px 20px 16px",
+          scrollbarWidth: "none",
+        }}
+      >
+        {MILESTONES.map((m, i) => (
+          <MilestoneCard
+            key={m.id}
+            m={m}
+            index={i}
+            isUnlocked={CURRENT_SCORE >= m.threshold}
+          />
+        ))}
+      </div>
+
+      {/* Progress track */}
+      <div className="px-5 pb-5">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-gray-400 font-medium">
+            Score {minScore}
+          </span>
+          <span className="text-xs font-bold" style={{ color: "#0d9488" }}>
+            Current: {CURRENT_SCORE}
+          </span>
+          <span className="text-xs text-gray-400 font-medium">
+            Score {maxScore}
+          </span>
+        </div>
+        <div
+          style={{
+            position: "relative",
+            height: 10,
+            background: "rgba(148,163,184,0.15)",
+            borderRadius: 999,
+            overflow: "visible",
+          }}
+        >
+          {/* Fill */}
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPct}%` }}
+            transition={{ delay: 0.6, duration: 1.2, ease: "easeOut" }}
+            style={{
+              height: "100%",
+              background: "linear-gradient(90deg, #0d9488, #0ea5e9, #6366f1)",
+              borderRadius: 999,
+              boxShadow: "0 0 8px rgba(99,102,241,0.4)",
+            }}
+          />
+          {/* Milestone markers */}
+          {MILESTONES.map((m) => {
+            const pct =
+              ((m.threshold - minScore) / (maxScore - minScore)) * 100;
+            const unlocked = CURRENT_SCORE >= m.threshold;
+            return (
+              <div
+                key={m.id}
+                title={m.title}
+                style={{
+                  position: "absolute",
+                  left: `${pct}%`,
+                  top: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  background: unlocked
+                    ? "linear-gradient(135deg, #0d9488, #6366f1)"
+                    : "#e2e8f0",
+                  border: "2px solid #fff",
+                  boxShadow: unlocked
+                    ? "0 0 0 2px rgba(13,148,136,0.35)"
+                    : "none",
+                  zIndex: 2,
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
+              />
+            );
+          })}
+          {/* Score indicator dot */}
+          <motion.div
+            initial={{ left: "0%" }}
+            animate={{ left: `${progressPct}%` }}
+            transition={{ delay: 0.6, duration: 1.2, ease: "easeOut" }}
+            style={{
+              position: "absolute",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 18,
+              height: 18,
+              borderRadius: "50%",
+              background: "#fff",
+              border: "3px solid #6366f1",
+              boxShadow:
+                "0 0 0 3px rgba(99,102,241,0.25), 0 2px 8px rgba(0,0,0,0.15)",
+              zIndex: 3,
+            }}
+          />
+        </div>
+        {/* Milestone labels */}
+        <div style={{ position: "relative", height: 28, marginTop: 4 }}>
+          {MILESTONES.map((m) => {
+            const pct =
+              ((m.threshold - minScore) / (maxScore - minScore)) * 100;
+            return (
+              <div
+                key={m.id}
+                style={{
+                  position: "absolute",
+                  left: `${pct}%`,
+                  transform: "translateX(-50%)",
+                  textAlign: "center",
+                  fontSize: 10,
+                  color: CURRENT_SCORE >= m.threshold ? "#0d9488" : "#94a3b8",
+                  fontWeight: CURRENT_SCORE >= m.threshold ? 700 : 400,
+                  whiteSpace: "nowrap",
+                  lineHeight: 1.2,
+                }}
+              >
+                <span style={{ fontSize: 12 }}>{m.icon}</span>
+                <div>{m.threshold}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── FD Credit Cards ──────────────────────────────────────────────────────────
 const fdCards = [
   {
@@ -419,7 +866,7 @@ function FDCreditCards() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.55 + i * 0.08 }}
-              className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50 transition-colors"
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors"
               data-ocid={`credit.fd_card.${i + 1}`}
             >
               {/* Card visual */}
@@ -458,7 +905,7 @@ function FDCreditCards() {
                 </div>
               </div>
               {/* Actions */}
-              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+              <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:flex-shrink-0 self-stretch sm:self-auto justify-between sm:justify-start">
                 <motion.button
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.96 }}
@@ -571,7 +1018,7 @@ function PaymentDetail() {
         <p className="text-gray-400 text-[10px] uppercase tracking-widest mb-2">
           Last 6 Months
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           {months.map((m) => (
             <div key={m} className="flex flex-col items-center gap-1">
               <div className="w-7 h-7 rounded-full flex items-center justify-center text-green-600 bg-green-50 border border-green-200">
@@ -971,7 +1418,7 @@ export default function CreditReport() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
         <div className="max-w-5xl mx-auto">
           {/* ─── Page Header ─────────────────────────────────────────── */}
           <motion.div
@@ -1082,7 +1529,7 @@ export default function CreditReport() {
                     </div>
                   ))}
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <motion.button
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
@@ -1146,6 +1593,9 @@ export default function CreditReport() {
           {/* ─── FD Credit Cards ──────────────────────────────────────── */}
           <FDCreditCards />
 
+          {/* ─── Credit Milestones 3D ─────────────────────────────────── */}
+          <CreditMilestones3D />
+
           {/* ─── Report Insights ──────────────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, y: 25 }}
@@ -1180,7 +1630,7 @@ export default function CreditReport() {
             className="rounded-2xl p-6 mb-6 relative overflow-hidden bg-gradient-to-r from-amber-500 to-yellow-400"
             data-ocid="credit.score_plus_banner.card"
           >
-            <div className="relative z-10 flex items-center gap-6">
+            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <Star size={16} className="text-amber-900" />
@@ -1204,7 +1654,7 @@ export default function CreditReport() {
                   Learn More →
                 </motion.button>
               </div>
-              <div className="w-40 h-28 rounded-xl overflow-hidden relative flex-shrink-0 bg-amber-400/40 border border-amber-300/50 flex items-center justify-center">
+              <div className="hidden sm:flex w-40 h-28 rounded-xl overflow-hidden relative flex-shrink-0 bg-amber-400/40 border border-amber-300/50 flex items-center justify-center">
                 <motion.div
                   whileHover={{ scale: 1.1 }}
                   className="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer bg-amber-900/30 border-2 border-amber-950"

@@ -28,11 +28,11 @@ export default function Profile() {
 
   return (
     <DashboardLayout>
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 flex items-center justify-between"
+          className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         >
           <div>
             <h1 className="text-3xl font-black text-slate-800">My Profile</h1>
@@ -44,7 +44,7 @@ export default function Profile() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={() => setEditing(!editing)}
-            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+            className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all w-full sm:w-auto ${
               editing
                 ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
                 : "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
