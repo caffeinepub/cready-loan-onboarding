@@ -1,5 +1,5 @@
 import { Camera } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 
@@ -33,6 +33,16 @@ export default function Profile() {
     localStorage.getItem("cready_profile_image") ?? null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [hasEmploymentDetails, setHasEmploymentDetails] = useState(false);
+  const [hintDismissed, setHintDismissed] = useState(false);
+
+  const profileCompletion = profileImage
+    ? hasEmploymentDetails
+      ? 100
+      : 85
+    : hasEmploymentDetails
+      ? 92
+      : 75;
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -52,9 +62,9 @@ export default function Profile() {
 
   // Employment Details state
   const [employmentType, setEmploymentType] = useState("Salaried");
-  const [companyName, setCompanyName] = useState("Tata Consultancy Services");
-  const [monthlyIncome, setMonthlyIncome] = useState("₹95,000");
-  const [workExperience, setWorkExperience] = useState("6 Years");
+  const [companyName, setCompanyName] = useState("");
+  const [monthlyIncome, setMonthlyIncome] = useState("");
+  const [workExperience, setWorkExperience] = useState("");
 
   function handleSave() {
     setEditing(false);
@@ -63,6 +73,42 @@ export default function Profile() {
   return (
     <DashboardLayout>
       <div className="p-4 md:p-8">
+        {/* Onboarding Hint Banner */}
+        <AnimatePresence>
+          {profileCompletion < 100 && !hintDismissed && (
+            <motion.div
+              key="hint-banner"
+              initial={{ opacity: 0, y: -8, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: "auto" }}
+              exit={{ opacity: 0, y: -8, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mb-4 overflow-hidden"
+            >
+              <div className="bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">💡</span>
+                  <p className="text-indigo-700 font-semibold text-sm">
+                    Complete your profile to unlock better offers
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                    {profileCompletion}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setHintDismissed(true)}
+                    data-ocid="profile.close_button"
+                    className="w-6 h-6 flex items-center justify-center rounded-full text-indigo-400 hover:text-indigo-600 hover:bg-indigo-100 transition-colors text-sm font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -125,6 +171,10 @@ export default function Profile() {
               </div>
               <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center border-2 border-[#0f172a] shadow-lg">
                 <Camera className="w-3.5 h-3.5 text-white" />
+                {/* Red dot indicator when no profile image */}
+                {!profileImage && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#0f172a] animate-pulse" />
+                )}
               </div>
             </button>
             <p className="text-slate-400 text-xs mb-2">Tap to change photo</p>
@@ -133,14 +183,12 @@ export default function Profile() {
             <div className="mt-4 w-full">
               <div className="flex justify-between text-xs mb-1">
                 <span className="text-slate-400">Profile Completion</span>
-                <span className="font-bold">
-                  {profileImage ? "100%" : "92%"}
-                </span>
+                <span className="font-bold">{profileCompletion}%</span>
               </div>
               <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: profileImage ? "100%" : "92%" }}
+                  animate={{ width: `${profileCompletion}%` }}
                   transition={{ duration: 1.2, delay: 0.5 }}
                   className="h-full bg-gradient-to-r from-indigo-400 to-teal-400 rounded-full"
                 />
@@ -264,17 +312,21 @@ export default function Profile() {
             </div>
           </motion.div>
 
+          {/* Employment Details — with empty state for new users */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100"
+            className={`bg-white rounded-2xl p-6 shadow-sm border border-slate-100 transition-all ${
+              !hasEmploymentDetails ? "ring-2 ring-amber-300 ring-offset-2" : ""
+            }`}
+            data-ocid="profile.panel"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">
                 Employment Details
               </h3>
-              {editing && (
+              {editing && hasEmploymentDetails && (
                 <motion.span
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -285,115 +337,180 @@ export default function Profile() {
               )}
             </div>
 
-            <div className="space-y-4">
-              {/* Employment Type */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="flex items-start gap-3"
-              >
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
-                  💼
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-slate-400 mb-1">Employment Type</p>
-                  {editing ? (
-                    <select
-                      value={employmentType}
-                      onChange={(e) => setEmploymentType(e.target.value)}
-                      data-ocid="profile.employment_type.select"
-                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
-                    >
-                      {employmentTypeOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="font-bold text-slate-800">{employmentType}</p>
-                  )}
-                </div>
-              </motion.div>
+            <AnimatePresence mode="wait">
+              {!hasEmploymentDetails ? (
+                <motion.div
+                  key="employment-empty"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center justify-center py-6 text-center"
+                  data-ocid="profile.empty_state"
+                >
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                      delay: 0.1,
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 14,
+                    }}
+                    className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-3 text-3xl shadow-inner"
+                  >
+                    💼
+                  </motion.div>
+                  <motion.p
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.18 }}
+                    className="text-slate-700 font-bold text-sm mb-1"
+                  >
+                    No employment details added.
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    className="text-slate-400 text-xs mb-5 max-w-[220px] leading-relaxed"
+                  >
+                    Add your employment details to improve your loan
+                    eligibility.
+                  </motion.p>
+                  <motion.button
+                    type="button"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.32 }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => {
+                      setHasEmploymentDetails(true);
+                      setEditing(true);
+                    }}
+                    data-ocid="profile.primary_button"
+                    className="border-2 border-indigo-500 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 font-semibold rounded-xl py-2 px-4 text-sm transition-colors"
+                  >
+                    + Add Employment Details
+                  </motion.button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="employment-fields"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4"
+                >
+                  {/* Employment Type */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                      💼
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-400 mb-1">
+                        Employment Type
+                      </p>
+                      {editing ? (
+                        <select
+                          value={employmentType}
+                          onChange={(e) => setEmploymentType(e.target.value)}
+                          data-ocid="profile.employment_type.select"
+                          className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                        >
+                          {employmentTypeOptions.map((opt) => (
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <p className="font-bold text-slate-800">
+                          {employmentType}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-              {/* Company Name */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.37 }}
-                className="flex items-start gap-3"
-              >
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
-                  🏢
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-slate-400 mb-1">Company Name</p>
-                  {editing ? (
-                    <input
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      data-ocid="profile.company_name.input"
-                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  ) : (
-                    <p className="font-bold text-slate-800">{companyName}</p>
-                  )}
-                </div>
-              </motion.div>
+                  {/* Company Name */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                      🏢
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-400 mb-1">
+                        Company Name
+                      </p>
+                      {editing ? (
+                        <input
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          data-ocid="profile.company_name.input"
+                          placeholder="e.g. Tata Consultancy Services"
+                          className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      ) : (
+                        <p className="font-bold text-slate-800">
+                          {companyName || "—"}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-              {/* Monthly Income */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.44 }}
-                className="flex items-start gap-3"
-              >
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
-                  💰
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-slate-400 mb-1">Monthly Income</p>
-                  {editing ? (
-                    <input
-                      value={monthlyIncome}
-                      onChange={(e) => setMonthlyIncome(e.target.value)}
-                      data-ocid="profile.monthly_income.input"
-                      placeholder="e.g. ₹95,000"
-                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  ) : (
-                    <p className="font-bold text-slate-800">{monthlyIncome}</p>
-                  )}
-                </div>
-              </motion.div>
+                  {/* Monthly Income */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                      💰
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-400 mb-1">
+                        Monthly Income
+                      </p>
+                      {editing ? (
+                        <input
+                          value={monthlyIncome}
+                          onChange={(e) => setMonthlyIncome(e.target.value)}
+                          data-ocid="profile.monthly_income.input"
+                          placeholder="e.g. ₹95,000"
+                          className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      ) : (
+                        <p className="font-bold text-slate-800">
+                          {monthlyIncome || "—"}
+                        </p>
+                      )}
+                    </div>
+                  </div>
 
-              {/* Work Experience */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.51 }}
-                className="flex items-start gap-3"
-              >
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
-                  📅
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-slate-400 mb-1">Work Experience</p>
-                  {editing ? (
-                    <input
-                      value={workExperience}
-                      onChange={(e) => setWorkExperience(e.target.value)}
-                      data-ocid="profile.work_experience.input"
-                      placeholder="e.g. 6 Years"
-                      className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  ) : (
-                    <p className="font-bold text-slate-800">{workExperience}</p>
-                  )}
-                </div>
-              </motion.div>
-            </div>
+                  {/* Work Experience */}
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-lg flex-shrink-0">
+                      📅
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-slate-400 mb-1">
+                        Work Experience
+                      </p>
+                      {editing ? (
+                        <input
+                          value={workExperience}
+                          onChange={(e) => setWorkExperience(e.target.value)}
+                          data-ocid="profile.work_experience.input"
+                          placeholder="e.g. 6 Years"
+                          className="w-full border border-indigo-300 rounded-xl px-3 py-2 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      ) : (
+                        <p className="font-bold text-slate-800">
+                          {workExperience || "—"}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>

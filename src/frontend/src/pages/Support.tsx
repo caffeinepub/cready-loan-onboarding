@@ -11,40 +11,7 @@ type Ticket = {
   category?: string;
 };
 
-const initialTickets: Ticket[] = [
-  {
-    id: "TKT001",
-    issue: "Loan application status enquiry",
-    status: "Open",
-    date: "Mar 25",
-    priority: "High",
-    category: "🏦 Loan Application",
-  },
-  {
-    id: "TKT002",
-    issue: "Credit score discrepancy on report",
-    status: "In Progress",
-    date: "Mar 22",
-    priority: "Medium",
-    category: "📊 Credit Score",
-  },
-  {
-    id: "TKT003",
-    issue: "KYC document re-upload request",
-    status: "Resolved",
-    date: "Mar 18",
-    priority: "Low",
-    category: "📄 KYC/Documents",
-  },
-  {
-    id: "TKT004",
-    issue: "EMI calculation clarification",
-    status: "Resolved",
-    date: "Mar 10",
-    priority: "Low",
-    category: "💰 EMI/Repayment",
-  },
-];
+const initialTickets: Ticket[] = [];
 
 const faqs = [
   {
@@ -97,6 +64,8 @@ export default function Support() {
   const [modalOpen, setModalOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [newTicketId, setNewTicketId] = useState("");
+
+  const hasTickets = tickets.length > 0;
 
   // Form state
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -172,7 +141,9 @@ export default function Support() {
           {[
             {
               label: "Open Tickets",
-              val: String(tickets.filter((t) => t.status === "Open").length),
+              val: hasTickets
+                ? String(tickets.filter((t) => t.status === "Open").length)
+                : "0",
               icon: "📋",
               color: "text-orange-500",
             },
@@ -184,9 +155,9 @@ export default function Support() {
             },
             {
               label: "Resolved This Month",
-              val: String(
-                tickets.filter((t) => t.status === "Resolved").length,
-              ),
+              val: hasTickets
+                ? String(tickets.filter((t) => t.status === "Resolved").length)
+                : "0",
               icon: "✅",
               color: "text-green-500",
             },
@@ -219,55 +190,132 @@ export default function Support() {
             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">
               My Tickets
             </h3>
-            <div className="space-y-3">
-              {tickets.map((t, i) => (
+
+            <AnimatePresence mode="wait">
+              {hasTickets ? (
                 <motion.div
-                  key={t.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25 + i * 0.06 }}
-                  className="flex items-start justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
-                  data-ocid={`ticket.item.${i + 1}`}
+                  key="ticket-list"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-3"
                 >
-                  <div>
-                    <p className="text-xs font-mono text-slate-400 mb-0.5">
-                      {t.id}
-                    </p>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {t.issue}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <p className="text-xs text-slate-400">{t.date}</p>
-                      {t.category && (
-                        <p className="text-xs text-slate-400">{t.category}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-1 ml-2">
-                    <span
-                      className={`text-[10px] font-bold px-2 py-1 rounded-full ${statusColor[t.status]}`}
+                  {tickets.map((t, i) => (
+                    <motion.div
+                      key={t.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 + i * 0.06 }}
+                      className="flex items-start justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                      data-ocid={`ticket.item.${i + 1}`}
                     >
-                      {t.status}
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${priorityColor[t.priority]}`}
-                    >
-                      {t.priority}
-                    </span>
-                  </div>
+                      <div>
+                        <p className="text-xs font-mono text-slate-400 mb-0.5">
+                          {t.id}
+                        </p>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {t.issue}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-xs text-slate-400">{t.date}</p>
+                          {t.category && (
+                            <p className="text-xs text-slate-400">
+                              {t.category}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 ml-2">
+                        <span
+                          className={`text-[10px] font-bold px-2 py-1 rounded-full ${statusColor[t.status]}`}
+                        >
+                          {t.status}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${priorityColor[t.priority]}`}
+                        >
+                          {t.priority}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={openModal}
+                    data-ocid="ticket.open_modal_button"
+                    className="mt-1 w-full py-2.5 bg-gradient-to-r from-indigo-50 to-violet-50 border border-dashed border-indigo-300 rounded-xl text-sm font-semibold text-indigo-600 hover:from-indigo-100 hover:to-violet-100 hover:border-indigo-400 transition-all"
+                  >
+                    ✦ Raise New Ticket
+                  </motion.button>
                 </motion.div>
-              ))}
-            </div>
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={openModal}
-              data-ocid="ticket.open_modal_button"
-              className="mt-4 w-full py-2.5 bg-gradient-to-r from-indigo-50 to-violet-50 border border-dashed border-indigo-300 rounded-xl text-sm font-semibold text-indigo-600 hover:from-indigo-100 hover:to-violet-100 hover:border-indigo-400 transition-all"
-            >
-              ✦ Raise New Ticket
-            </motion.button>
+              ) : (
+                <motion.div
+                  key="empty-state"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.35 }}
+                  className="flex flex-col items-center justify-center py-8 text-center"
+                  data-ocid="ticket.empty_state"
+                >
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{
+                      delay: 0.15,
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 14,
+                    }}
+                    className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mb-4 text-4xl shadow-inner"
+                  >
+                    🎫
+                  </motion.div>
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    className="text-slate-700 font-bold text-base mb-1"
+                  >
+                    No tickets raised yet.
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.32 }}
+                    className="text-slate-400 text-sm mb-6"
+                  >
+                    Need help? Raise your first ticket.
+                  </motion.p>
+                  <motion.button
+                    type="button"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={openModal}
+                    data-ocid="ticket.open_modal_button"
+                    className="relative px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/30 text-sm overflow-hidden group"
+                  >
+                    <span className="relative z-10">
+                      ✦ Raise Your First Ticket
+                    </span>
+                    <motion.div
+                      animate={{ x: ["-100%", "200%"] }}
+                      transition={{
+                        duration: 2.4,
+                        repeat: Number.POSITIVE_INFINITY,
+                        ease: "linear",
+                      }}
+                      className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 pointer-events-none"
+                    />
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           <motion.div
@@ -418,7 +466,11 @@ export default function Support() {
                             >
                               <span className="text-xl">{cat.emoji}</span>
                               <span
-                                className={`text-[10px] font-bold leading-tight ${selectedCategory === cat.label ? "text-indigo-700" : "text-slate-600"}`}
+                                className={`text-[10px] font-bold leading-tight ${
+                                  selectedCategory === cat.label
+                                    ? "text-indigo-700"
+                                    : "text-slate-600"
+                                }`}
                               >
                                 {cat.label}
                               </span>
