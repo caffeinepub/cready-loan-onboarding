@@ -98,9 +98,9 @@ const FALLBACK_BANKS = [
 const QUICK_BANKS = [
   "STATE BANK OF INDIA",
   "HDFC BANK",
-  "ICICI BANK",
+  "ICICI BANK LIMITED",
   "AXIS BANK",
-  "KOTAK MAHINDRA BANK",
+  "KOTAK MAHINDRA BANK LIMITED",
   "PUNJAB NATIONAL BANK",
   "BANK OF BARODA",
   "CANARA BANK",
@@ -109,12 +109,17 @@ const QUICK_BANKS = [
 const QUICK_BANK_COLORS: Record<string, string> = {
   "STATE BANK OF INDIA": "bg-blue-100 text-blue-700 border-blue-200",
   "HDFC BANK": "bg-red-100 text-red-700 border-red-200",
-  "ICICI BANK": "bg-orange-100 text-orange-700 border-orange-200",
+  "ICICI BANK LIMITED": "bg-orange-100 text-orange-700 border-orange-200",
   "AXIS BANK": "bg-purple-100 text-purple-700 border-purple-200",
-  "KOTAK MAHINDRA BANK": "bg-rose-100 text-rose-700 border-rose-200",
+  "KOTAK MAHINDRA BANK LIMITED": "bg-rose-100 text-rose-700 border-rose-200",
   "PUNJAB NATIONAL BANK": "bg-indigo-100 text-indigo-700 border-indigo-200",
   "BANK OF BARODA": "bg-amber-100 text-amber-700 border-amber-200",
   "CANARA BANK": "bg-yellow-100 text-yellow-700 border-yellow-200",
+};
+
+const QUICK_BANK_LABELS: Record<string, string> = {
+  "ICICI BANK LIMITED": "ICICI Bank",
+  "KOTAK MAHINDRA BANK LIMITED": "Kotak Bank",
 };
 
 function fmt(s: string) {
@@ -697,7 +702,7 @@ export default function IFSCFinder() {
                                   : `${QUICK_BANK_COLORS[bank] ?? "bg-slate-100 text-slate-600 border-slate-200"} hover:shadow-sm`
                               }`}
                             >
-                              {fmt(bank)}
+                              {QUICK_BANK_LABELS[bank] ?? fmt(bank)}
                             </motion.button>
                           ))}
                         </div>

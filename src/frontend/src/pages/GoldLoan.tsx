@@ -422,6 +422,12 @@ function GoldRatesSection({
     setCalcResult(ratePerGram * calcGrams);
   }
 
+  // Auto-recalculate whenever rates, city, karat, or grams change
+  useEffect(() => {
+    const ratePerGram = cityR[calcCity][calcKarat];
+    setCalcResult(ratePerGram * calcGrams);
+  }, [cityR, calcCity, calcKarat, calcGrams]);
+
   const cities = Object.keys(cityR);
 
   return (
