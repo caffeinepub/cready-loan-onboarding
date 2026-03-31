@@ -244,25 +244,54 @@ const recommendedOffers = [
 
 const fdCards = [
   {
+    id: "sbm-zet",
     name: "SBM ZET Credit Card",
-    fd: "FD from ₹2,000",
+    bank: "SBM Bank",
+    fd: "₹2,000",
     fee: "Lifetime Free",
-    gradient: "from-purple-600 to-violet-800",
-    logo: "🏦",
+    gradient: "from-violet-600 via-purple-600 to-indigo-700",
+    logo: "💜",
+    tag: "Best Cashback",
+    tagColor: "bg-violet-100 text-violet-700",
+    applyUrl:
+      "https://sbm-zet-card.zetapp.in/onboarding/verify?utm_campaign=zet-rupay&utm_source=cready",
+    highlights: [
+      "5% cashback Amazon/Flipkart",
+      "2% UPI spends",
+      "20% off Zomato/Swiggy",
+    ],
   },
   {
-    name: "Tata Neu HDFC Secured",
-    fd: "FD from ₹15,000",
-    fee: "1st Year Free",
-    gradient: "from-blue-600 to-cyan-700",
-    logo: "💳",
+    id: "zet-iob",
+    name: "ZET IOB Credit Card",
+    bank: "Indian Overseas Bank",
+    fd: "₹5,000",
+    fee: "Lifetime Free",
+    gradient: "from-blue-600 via-cyan-600 to-teal-600",
+    logo: "⚡",
+    tag: "Best Fuel Benefits",
+    tagColor: "bg-blue-100 text-blue-700",
+    applyUrl:
+      "https://zet-card.zetapp.in/iob-onboarding/verify?utm_campaign=zet-rupay&utm_source=cready&sub1=useridentifier&referrer=bank=iob-web",
+    highlights: [
+      "41L free fuel/year",
+      "10% fuel reward points",
+      "5X UPI rewards",
+    ],
   },
   {
-    name: "IDFC FIRST Earn Card",
-    fd: "FD from ₹5,000",
-    fee: "1st Year Free",
-    gradient: "from-orange-500 to-rose-600",
-    logo: "🎯",
+    id: "novio-sbm",
+    name: "Novio SBM Credit Card",
+    bank: "SBM Bank",
+    fd: "₹5,000",
+    fee: "Lifetime Free",
+    gradient: "from-rose-500 via-pink-600 to-orange-500",
+    logo: "🌟",
+    tag: "Best Rewards",
+    tagColor: "bg-rose-100 text-rose-700",
+    applyUrl:
+      "https://customer.credilio.in/v2/sbm-credilio-rupay-credit-card-on-upi?utm_org_code=ORG02560&utm_advisor_code=CRD0181379",
+    highlights: ["41L free fuel/year", "5X reward points", "Welcome ₹5,000"],
   },
 ];
 
@@ -690,7 +719,7 @@ export default function Step4Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-4 md:p-8 overflow-auto">
+      <div className="p-4 md:p-8 overflow-auto pb-24 md:pb-8">
         {/* Welcome header */}
         <div className="flex items-start justify-between flex-wrap gap-2 mb-6">
           <div>
@@ -815,10 +844,12 @@ export default function Step4Dashboard() {
           {/* Mobile swipe carousel */}
           <div className="md:hidden">
             <div
-              className="flex gap-4 overflow-x-auto pb-4"
+              className="flex gap-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden"
               style={{
                 scrollSnapType: "x mandatory",
                 WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               }}
             >
               {recommendedOffers.map((offer, i) => (
@@ -827,9 +858,6 @@ export default function Step4Dashboard() {
                   initial={{ x: -50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.3, delay: i * 0.08 }}
-                  whileDrag={{ scale: 0.97, rotate: 1 }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
                   className={`bg-gradient-to-br ${offer.gradient} rounded-2xl p-4 text-white relative overflow-hidden cursor-pointer flex-shrink-0 w-[210px] ring-2 ring-white/20 shadow-xl`}
                   style={{ scrollSnapAlign: "start" }}
                   data-ocid={`dashboard.offer.${i + 1}`}
@@ -988,56 +1016,86 @@ export default function Step4Dashboard() {
 
         {/* FD-Backed Credit Cards */}
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-slate-800">
                 FD-Backed Credit Cards
-              </p>
-              <p className="text-sm font-bold text-slate-700">
-                Build credit with secured credit cards
-              </p>
+              </h2>
+              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-100">
+                🔒 Secured
+              </span>
             </div>
-            <span className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full">
-              Secured
-            </span>
           </div>
+          <p className="text-xs text-slate-400 mb-3">
+            Build credit &amp; earn rewards — ₹0 joining fee, lifetime free
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {fdCards.map((card, i) => (
               <motion.div
-                key={card.name}
-                initial={{ opacity: 0, y: 10 }}
+                key={card.id}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.08 }}
-                whileHover={{ scale: 1.02 }}
-                className={`bg-gradient-to-br ${card.gradient} rounded-xl shadow-md p-4 relative overflow-hidden`}
+                transition={{ delay: 0.08 + i * 0.08 }}
+                whileHover={{ scale: 1.025, y: -2 }}
+                className={`bg-gradient-to-br ${card.gradient} rounded-2xl shadow-lg p-4 relative overflow-hidden cursor-pointer group`}
                 data-ocid={`dashboard.fd_card.${i + 1}`}
               >
-                <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-white/20" />
-                <div className="absolute -bottom-6 -left-2 w-14 h-14 rounded-full bg-white/20" />
+                {/* Shimmer overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+                {/* Decorative circles */}
+                <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-white/15 pointer-events-none" />
+                <div className="absolute -bottom-8 -left-4 w-20 h-20 rounded-full bg-white/10 pointer-events-none" />
                 <div className="relative">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">{card.logo}</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30">
-                      {card.fee}
+                  {/* Top row: logo + network chip */}
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-2xl leading-none">{card.logo}</span>
+                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/25 text-white border border-white/30 backdrop-blur-sm">
+                      🇮🇳 RuPay
                     </span>
                   </div>
-                  <p className="text-xs font-bold text-white mb-1 leading-tight">
+                  {/* Card name */}
+                  <p className="text-[11px] font-bold text-white leading-tight mb-0.5">
                     {card.name}
                   </p>
-                  <p className="text-[10px] text-white/70 mb-3">{card.fd}</p>
+                  {/* LIFETIME FREE badge */}
+                  <div className="flex items-center gap-1.5 mb-2.5">
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-white/20 text-white/90 uppercase tracking-wide">
+                      LIFETIME FREE
+                    </span>
+                    <span className="text-[9px] text-white/60">
+                      · FD from ₹{card.fd}
+                    </span>
+                  </div>
+                  {/* Highlights */}
+                  <ul className="space-y-1 mb-3">
+                    {card.highlights.map((h) => (
+                      <li key={h} className="flex items-start gap-1.5">
+                        <span className="text-white/70 text-[9px] mt-0.5 leading-none">
+                          ✦
+                        </span>
+                        <span className="text-[10px] text-white/90 leading-tight">
+                          {h}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  {/* CTA */}
                   <motion.button
                     whileHover={{ scale: 1.04 }}
                     whileTap={{ scale: 0.96 }}
                     data-ocid={`dashboard.fd_card_eligibility.${i + 1}`}
                     onClick={() => setSelectedFDCardIdx(i)}
-                    className="w-full bg-white text-slate-800 text-xs font-bold py-1.5 rounded-lg hover:bg-white/90 transition-colors"
+                    className="w-full bg-white/95 hover:bg-white text-slate-800 text-[10px] font-bold py-2 rounded-xl transition-colors shadow-sm"
                   >
-                    Check Eligibility
+                    Check Eligibility →
                   </motion.button>
                 </div>
               </motion.div>
             ))}
           </div>
+          <p className="text-center text-[10px] text-slate-400 mt-2">
+            All cards: ₹0 joining + ₹0 annual fee · Secured by Fixed Deposit
+          </p>
         </div>
       </div>
 
@@ -1326,15 +1384,12 @@ export default function Step4Dashboard() {
           selectedFDCardIdx !== null
             ? {
                 name: fdCards[selectedFDCardIdx].name,
-                bank: fdCards[selectedFDCardIdx].name.includes("SBM")
-                  ? "SBM Bank"
-                  : fdCards[selectedFDCardIdx].name.includes("HDFC")
-                    ? "HDFC Bank"
-                    : "IDFC FIRST Bank",
+                bank: fdCards[selectedFDCardIdx].bank,
                 fdFrom: fdCards[selectedFDCardIdx].fd,
                 fee: fdCards[selectedFDCardIdx].fee,
                 logo: fdCards[selectedFDCardIdx].logo,
                 color: fdCards[selectedFDCardIdx].gradient,
+                applyUrl: fdCards[selectedFDCardIdx].applyUrl,
               }
             : null
         }

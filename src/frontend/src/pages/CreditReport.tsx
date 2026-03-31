@@ -238,7 +238,7 @@ function ScoreBooster() {
               key={currentScore}
               initial={{ scale: 1.3, color: "#fff" }}
               animate={{ scale: 1, color: "#fff" }}
-              className="text-3xl font-black text-white"
+              className="text-2xl sm:text-3xl font-black text-white"
             >
               {currentScore}
             </motion.span>
@@ -661,7 +661,10 @@ function CreditMilestones3D() {
           scrollSnapType: "x mandatory",
           padding: "8px 20px 16px",
           scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          WebkitOverflowScrolling: "touch",
         }}
+        className="[&::-webkit-scrollbar]:hidden"
       >
         {MILESTONES.map((m, i) => (
           <MilestoneCard
@@ -759,7 +762,14 @@ function CreditMilestones3D() {
           />
         </div>
         {/* Milestone labels */}
-        <div style={{ position: "relative", height: 28, marginTop: 4 }}>
+        <div
+          style={{
+            position: "relative",
+            height: 28,
+            marginTop: 4,
+            overflow: "hidden",
+          }}
+        >
           {MILESTONES.map((m) => {
             const pct =
               ((m.threshold - minScore) / (maxScore - minScore)) * 100;
@@ -792,46 +802,130 @@ function CreditMilestones3D() {
 // ─── FD Credit Cards ──────────────────────────────────────────────────────────
 const fdCards = [
   {
-    id: "sbm",
+    id: "sbm-zet",
     name: "SBM ZET Credit Card",
     bank: "SBM Bank",
+    network: "RuPay",
     fdFrom: "₹2,000",
     fee: "Lifetime Free",
-    feeColor: "bg-green-100 text-green-700",
-    benefits: [
-      "20% off on Swiggy & Zomato",
-      "5% cashback on Amazon & Flipkart",
+    joiningFee: "₹0",
+    annualFee: "₹0",
+    gradient: "from-violet-600 via-purple-600 to-indigo-700",
+    accentColor: "#7c3aed",
+    color: "from-violet-600 via-purple-600 to-indigo-700",
+    logo: "💜",
+    tag: "Best Cashback",
+    tagColor: "bg-violet-100 text-violet-700",
+    applyUrl:
+      "https://sbm-zet-card.zetapp.in/onboarding/verify?utm_campaign=zet-rupay&utm_source=cready",
+    highlights: [
+      "5% cashback Amazon/Flipkart",
+      "2% UPI spends",
+      "20% off Zomato/Swiggy",
     ],
-    color: "from-purple-500 to-indigo-600",
-    logo: "🏦",
+    features: [
+      {
+        icon: "🛒",
+        label: "Amazon & Flipkart",
+        value: "5% cashback on vouchers",
+      },
+      { icon: "📱", label: "UPI Spends", value: "2% cashback" },
+      {
+        icon: "🍔",
+        label: "Zomato, Swiggy, Instamart",
+        value: "Up to 20% off",
+      },
+      { icon: "🎬", label: "BookMyShow", value: "Up to 20% off" },
+      {
+        icon: "🏷️",
+        label: "80+ Brands (Dominos, PVR, Nykaa)",
+        value: "Up to 15% cashback",
+      },
+      { icon: "🏦", label: "SBM Bank FD Interest", value: "Up to 7% p.a." },
+    ],
+    otherBenefits: [
+      "Lifetime-free secured credit card",
+      "RuPay Network powered",
+      "FD from minimum ₹2,000",
+    ],
   },
   {
-    id: "tata",
-    name: "Tata Neu Infinity HDFC Bank",
-    bank: "HDFC Bank",
-    fdFrom: "₹15,000",
-    fee: "1st Year: ₹1,499 waived",
-    feeColor: "bg-blue-100 text-blue-700",
-    benefits: [
-      "Up to 10% value-back on Tata Neu",
-      "8 domestic lounge visits/yr",
-    ],
-    color: "from-blue-500 to-cyan-600",
-    logo: "💳",
-  },
-  {
-    id: "idfc",
-    name: "IDFC FIRST Earn Credit Card",
-    bank: "IDFC FIRST Bank",
+    id: "zet-iob",
+    name: "ZET IOB Credit Card",
+    bank: "Indian Overseas Bank",
+    network: "RuPay",
     fdFrom: "₹5,000",
-    fee: "1st Year: ₹499 waived",
-    feeColor: "bg-orange-100 text-orange-700",
-    benefits: [
-      "1% cashback on all UPI spends",
-      "Save ₹1,200/yr on movie tickets",
+    fee: "Lifetime Free",
+    joiningFee: "₹0",
+    annualFee: "₹0",
+    gradient: "from-blue-600 via-cyan-600 to-teal-600",
+    accentColor: "#0891b2",
+    color: "from-blue-600 via-cyan-600 to-teal-600",
+    logo: "⚡",
+    tag: "Best Fuel Benefits",
+    tagColor: "bg-blue-100 text-blue-700",
+    applyUrl:
+      "https://zet-card.zetapp.in/iob-onboarding/verify?utm_campaign=zet-rupay&utm_source=cready&sub1=useridentifier&referrer=bank=iob-web",
+    highlights: [
+      "41L free fuel/year",
+      "10% fuel reward points",
+      "5X UPI rewards",
     ],
-    color: "from-orange-400 to-pink-500",
-    logo: "🎯",
+    features: [
+      { icon: "⛽", label: "Free Fuel Annually", value: "Up to 41 litres" },
+      { icon: "📱", label: "Fuel UPI Spends", value: "10% Reward Points" },
+      { icon: "✖️", label: "UPI & POS Transactions", value: "5X Reward Points" },
+      { icon: "🎁", label: "Welcome Benefits", value: "Worth ₹5,000" },
+      { icon: "🎬", label: "BookMyShow", value: "BOGO Offer" },
+      {
+        icon: "🍕",
+        label: "Swiggy, Zepto, Amazon",
+        value: "Flat ₹100 off each",
+      },
+    ],
+    otherBenefits: [
+      "7% p.a. interest on FD",
+      "90% credit limit of FD",
+      "Limits up to ₹4,50,000",
+      "100+ Exclusive RuPay brand offers",
+    ],
+  },
+  {
+    id: "novio-sbm",
+    name: "Novio SBM Credit Card",
+    bank: "SBM Bank",
+    network: "RuPay",
+    fdFrom: "₹5,000",
+    fee: "Lifetime Free",
+    joiningFee: "₹0",
+    annualFee: "₹0",
+    gradient: "from-rose-500 via-pink-600 to-orange-500",
+    accentColor: "#e11d48",
+    color: "from-rose-500 via-pink-600 to-orange-500",
+    logo: "🌟",
+    tag: "Best Rewards",
+    tagColor: "bg-rose-100 text-rose-700",
+    applyUrl:
+      "https://customer.credilio.in/v2/sbm-credilio-rupay-credit-card-on-upi?utm_org_code=ORG02560&utm_advisor_code=CRD0181379",
+    highlights: ["41L free fuel/year", "5X reward points", "Welcome ₹5,000"],
+    features: [
+      { icon: "⛽", label: "Free Fuel Annually", value: "Up to 41 litres" },
+      { icon: "📱", label: "Fuel UPI Spends", value: "10% Reward Points" },
+      { icon: "✖️", label: "UPI & POS Transactions", value: "5X Reward Points" },
+      { icon: "🎁", label: "Welcome Benefits", value: "Worth ₹5,000" },
+      { icon: "🎬", label: "BookMyShow", value: "BOGO Offer" },
+      {
+        icon: "🛒",
+        label: "Swiggy, Zepto, Amazon",
+        value: "Flat ₹100 off each",
+      },
+    ],
+    otherBenefits: [
+      "7% p.a. interest on FD",
+      "90% credit limit of FD",
+      "Limits up to ₹4,50,000",
+      "RuPay powered — use on any UPI app",
+    ],
   },
 ];
 
@@ -843,84 +937,133 @@ function FDCreditCards() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6"
+        className="mb-6"
         data-ocid="credit.fd_cards.card"
       >
-        <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
           <div>
-            <h3 className="text-base font-bold text-gray-900">
-              Credit Cards to Improve CIBIL Score
-            </h3>
-            <p className="text-xs text-gray-500 mt-0.5">
-              FD-backed secured credit cards — best way to build credit
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-lg font-bold text-gray-900">
+                FD-Backed Credit Cards
+              </h3>
+              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-100">
+                🔒 Secured
+              </span>
+            </div>
+            <p className="text-xs text-gray-500">
+              All lifetime free · ₹0 joining fee · ₹0 annual fee
             </p>
           </div>
-          <span className="bg-indigo-50 text-indigo-600 text-xs font-bold px-3 py-1 rounded-full">
-            FD-Backed
+          <span className="text-[10px] text-gray-400 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 self-start sm:self-center">
+            Powered by RuPay 🇮🇳
           </span>
         </div>
-        <div className="divide-y divide-gray-50">
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 gap-5">
           {fdCards.map((card, i) => (
             <motion.div
               key={card.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.55 + i * 0.08 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55 + i * 0.1 }}
+              whileHover={{ scale: 1.008, y: -1 }}
+              className="rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-white group"
               data-ocid={`credit.fd_card.${i + 1}`}
             >
-              {/* Card visual */}
+              {/* Gradient Card Header */}
               <div
-                className={`w-14 h-10 rounded-lg bg-gradient-to-br ${card.color} flex items-center justify-center text-xl flex-shrink-0 relative`}
+                className={`bg-gradient-to-r ${card.gradient} px-5 py-4 relative overflow-hidden`}
               >
-                {card.logo}
-                <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[8px] font-bold px-1 py-0.5 rounded-full">
-                  FD
-                </span>
+                {/* Decorative blobs */}
+                <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
+                <div className="absolute -bottom-8 -left-4 w-24 h-24 rounded-full bg-white/10 pointer-events-none" />
+                {/* Shimmer */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+                <div className="relative flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl leading-none">{card.logo}</span>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                        <p className="text-white font-bold text-base leading-tight">
+                          {card.name}
+                        </p>
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30 uppercase tracking-wide">
+                          🇮🇳 {card.network}
+                        </span>
+                      </div>
+                      <p className="text-white/70 text-xs">
+                        {card.bank} · FD from {card.fdFrom}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="bg-white/20 border border-white/30 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                      LIFETIME FREE
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${card.tagColor}`}
+                    >
+                      {card.tag}
+                    </span>
+                  </div>
+                </div>
               </div>
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-sm text-gray-900 truncate">
-                    {card.name}
-                  </span>
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${card.feeColor}`}
-                  >
-                    {card.fee}
-                  </span>
+
+              {/* Features Grid */}
+              <div className="px-5 pt-4 pb-3">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                  Key Benefits
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                  {card.features.map((feat) => (
+                    <div
+                      key={feat.label}
+                      className="flex items-start gap-2.5 p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                    >
+                      <span className="text-base leading-none mt-0.5 flex-shrink-0">
+                        {feat.icon}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-gray-500 leading-tight truncate">
+                          {feat.label}
+                        </p>
+                        <p className="text-[11px] font-bold text-gray-800 leading-snug">
+                          {feat.value}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="text-xs text-gray-400 mt-0.5">
-                  FD starting from {card.fdFrom} · {card.bank}
-                </div>
-                <div className="flex flex-wrap gap-2 mt-1.5">
-                  {card.benefits.map((b) => (
+
+                {/* Other Benefits chips */}
+                <div className="flex flex-wrap gap-1.5 mb-4">
+                  {card.otherBenefits.map((b) => (
                     <span
                       key={b}
-                      className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
+                      className="text-[10px] px-2.5 py-1 rounded-full border font-medium"
+                      style={{
+                        borderColor: `${card.accentColor}40`,
+                        color: card.accentColor,
+                        backgroundColor: `${card.accentColor}08`,
+                      }}
                     >
-                      {b}
+                      ✓ {b}
                     </span>
                   ))}
                 </div>
-              </div>
-              {/* Actions */}
-              <div className="flex flex-row sm:flex-col items-center sm:items-end gap-2 sm:flex-shrink-0 self-stretch sm:self-auto justify-between sm:justify-start">
+
+                {/* CTA */}
                 <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
                   data-ocid={`credit.fd_card_eligibility.${i + 1}`}
                   onClick={() => setSelectedFDIdx(i)}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+                  className={`w-full bg-gradient-to-r ${card.gradient} text-white text-sm font-bold py-3 rounded-xl shadow-md transition-all hover:shadow-lg hover:opacity-95`}
                 >
-                  Check Eligibility
+                  Check Eligibility →
                 </motion.button>
-                <button
-                  type="button"
-                  className="text-[11px] text-indigo-500 hover:underline"
-                >
-                  + More Details
-                </button>
               </div>
             </motion.div>
           ))}
@@ -938,6 +1081,7 @@ function FDCreditCards() {
                 fee: fdCards[selectedFDIdx].fee,
                 logo: fdCards[selectedFDIdx].logo,
                 color: fdCards[selectedFDIdx].color,
+                applyUrl: fdCards[selectedFDIdx].applyUrl,
               }
             : null
         }
@@ -1018,7 +1162,7 @@ function PaymentDetail() {
         <p className="text-gray-400 text-[10px] uppercase tracking-widest mb-2">
           Last 6 Months
         </p>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-row flex-wrap gap-3">
           {months.map((m) => (
             <div key={m} className="flex flex-col items-center gap-1">
               <div className="w-7 h-7 rounded-full flex items-center justify-center text-green-600 bg-green-50 border border-green-200">
@@ -1243,7 +1387,7 @@ function AccountDetail() {
             />
           ))}
         </div>
-        <div className="flex gap-4 mt-2">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
           {segments.map((s) => (
             <div key={s.label} className="flex items-center gap-1.5">
               <div
@@ -1350,7 +1494,7 @@ function InsightRow({
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-4 py-4 px-5 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
+        className="w-full flex items-center gap-2 sm:gap-4 py-4 px-3 sm:px-5 hover:bg-gray-50 rounded-xl transition-all duration-200 group"
       >
         <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-lg flex-shrink-0">
           {item.icon}
@@ -1440,11 +1584,11 @@ export default function CreditReport() {
             className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6"
             data-ocid="credit.score_hero.card"
           >
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 items-center">
               {/* Left: Gauge */}
               <div className="flex flex-col items-center">
                 <CreditGauge score={score} />
-                <div className="flex gap-4 mt-4">
+                <div className="flex flex-wrap gap-x-4 gap-y-2 mt-4">
                   <div className="text-center">
                     <p className="text-xs text-gray-400 uppercase tracking-wide">
                       ECN
@@ -1453,7 +1597,7 @@ export default function CreditReport() {
                       CR7845291036
                     </p>
                   </div>
-                  <div className="w-px bg-gray-200" />
+                  <div className="w-px bg-gray-200 hidden sm:block" />
                   <div className="text-center">
                     <p className="text-xs text-gray-400 uppercase tracking-wide">
                       Name
@@ -1462,7 +1606,7 @@ export default function CreditReport() {
                       Rahul Sharma
                     </p>
                   </div>
-                  <div className="w-px bg-gray-200" />
+                  <div className="w-px bg-gray-200 hidden sm:block" />
                   <div className="text-center">
                     <p className="text-xs text-gray-400 uppercase tracking-wide">
                       Bureau
@@ -1474,10 +1618,10 @@ export default function CreditReport() {
               {/* Right: Info */}
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <h2 className="text-2xl font-black text-gray-900">
+                  <h2 className="text-xl sm:text-2xl font-black text-gray-900">
                     Score: {score} —{" "}
                   </h2>
-                  <span className="text-xl font-black bg-gradient-to-r from-teal-500 to-indigo-600 bg-clip-text text-transparent">
+                  <span className="text-lg sm:text-xl font-black bg-gradient-to-r from-teal-500 to-indigo-600 bg-clip-text text-transparent">
                     EXCELLENT
                   </span>
                 </div>
@@ -1485,7 +1629,7 @@ export default function CreditReport() {
                   You're in the top 5% of credit holders in India. Your
                   financial health is outstanding.
                 </p>
-                <div className="grid grid-cols-2 gap-3 mb-5">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-5">
                   {[
                     {
                       label: "Total Accounts",
@@ -1529,7 +1673,7 @@ export default function CreditReport() {
                     </div>
                   ))}
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-row flex-wrap gap-3">
                   <motion.button
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
@@ -1788,6 +1932,7 @@ export default function CreditReport() {
           fee: fdCards[0].fee,
           logo: fdCards[0].logo,
           color: fdCards[0].color,
+          applyUrl: fdCards[0].applyUrl,
         }}
       />
     </DashboardLayout>

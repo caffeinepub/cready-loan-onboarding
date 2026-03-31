@@ -8,6 +8,7 @@ interface FDCard {
   fee: string;
   logo: string;
   color?: string;
+  applyUrl?: string;
 }
 
 interface Props {
@@ -16,7 +17,12 @@ interface Props {
   card: FDCard | null;
 }
 
-const BANKS = ["SBM Bank", "HDFC Bank", "IDFC FIRST Bank"];
+const BANKS = [
+  "SBM Bank",
+  "Indian Overseas Bank",
+  "HDFC Bank",
+  "IDFC FIRST Bank",
+];
 const TENURES = ["6 months", "1 year", "2 years", "3 years"];
 const BILLING_CYCLES = [
   "1st of month",
@@ -103,7 +109,7 @@ export default function FDEligibilityModal({ open, onClose, card }: Props) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.92, y: 20 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden mx-auto my-auto"
+        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden mx-auto my-auto max-h-[95vh] flex flex-col"
         style={{ position: "relative", zIndex: 1 }}
       >
         {/* Card header */}
@@ -128,7 +134,7 @@ export default function FDEligibilityModal({ open, onClose, card }: Props) {
               type="button"
               onClick={onClose}
               data-ocid="fd_eligibility.close_button"
-              className="text-white/70 hover:text-white transition-colors text-xl leading-none"
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors text-xl leading-none"
             >
               ✕
             </button>
@@ -162,7 +168,7 @@ export default function FDEligibilityModal({ open, onClose, card }: Props) {
           </div>
         </div>
 
-        <div className="px-6 py-5 min-h-[260px] overflow-hidden relative">
+        <div className="px-6 py-5 min-h-[200px] overflow-y-auto flex-1 relative">
           <AnimatePresence custom={dir} mode="wait">
             {step === 0 && (
               <motion.div
@@ -177,7 +183,7 @@ export default function FDEligibilityModal({ open, onClose, card }: Props) {
                 <h3 className="text-base font-bold text-gray-900 mb-4">
                   Personal Details
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="fd-name" className={labelCls}>
                       Full Name
@@ -416,13 +422,14 @@ export default function FDEligibilityModal({ open, onClose, card }: Props) {
                   </svg>
                 </motion.div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Application Submitted!
+                  Application Submitted! 🎉
                 </h3>
-                <p className="text-sm text-gray-500 mb-5 max-w-xs">
-                  We'll review your FD details and reach out within 24 hours.
+                <p className="text-sm text-gray-500 mb-4 max-w-xs">
+                  Your details are saved. Click below to complete your
+                  application on the partner platform.
                 </p>
                 <div
-                  className={`bg-gradient-to-r ${gradientClass} rounded-xl px-5 py-3 flex items-center gap-3 text-left`}
+                  className={`bg-gradient-to-r ${gradientClass} rounded-xl px-5 py-3 flex items-center gap-3 text-left w-full mb-4`}
                 >
                   <span className="text-2xl">{card.logo}</span>
                   <div>
@@ -430,7 +437,21 @@ export default function FDEligibilityModal({ open, onClose, card }: Props) {
                     <p className="text-white/70 text-xs">{card.bank}</p>
                   </div>
                 </div>
-                <p className="text-[11px] text-gray-400 mt-4">
+                {card.applyUrl && (
+                  <motion.a
+                    href={card.applyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-ocid="fd_eligibility.apply_button"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className={`w-full flex items-center justify-center gap-2 bg-gradient-to-r ${gradientClass} text-white text-sm font-bold py-3.5 px-6 rounded-xl shadow-lg mb-3 transition-all hover:shadow-xl hover:opacity-95`}
+                  >
+                    <span>Proceed to Apply on {card.bank}</span>
+                    <span className="text-base">→</span>
+                  </motion.a>
+                )}
+                <p className="text-[11px] text-gray-400">
                   Reference: FD{Date.now().toString().slice(-8)}
                 </p>
               </motion.div>
@@ -485,9 +506,9 @@ export default function FDEligibilityModal({ open, onClose, card }: Props) {
               whileTap={{ scale: 0.97 }}
               onClick={onClose}
               data-ocid="fd_eligibility.confirm_button"
-              className="ml-auto px-6 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white text-sm font-bold transition-colors"
+              className="ml-auto px-6 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-bold transition-colors"
             >
-              Done ✓
+              Done
             </motion.button>
           )}
         </div>

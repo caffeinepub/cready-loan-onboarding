@@ -237,7 +237,7 @@ function EligibilityModal({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.88, opacity: 0, y: 24 }}
         transition={{ type: "spring", stiffness: 340, damping: 28 }}
-        className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-white rounded-3xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header gradient band */}
@@ -246,7 +246,7 @@ function EligibilityModal({
             type="button"
             onClick={onClose}
             data-ocid="offers.eligibility.close_button"
-            className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+            className="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
           >
             ✕
           </button>
@@ -353,14 +353,16 @@ export default function MyOffers() {
 
   return (
     <DashboardLayout>
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-3xl font-black text-slate-800">My Offers</h1>
+          <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+            <h1 className="text-2xl md:text-3xl font-black text-slate-800">
+              My Offers
+            </h1>
             <span className="bg-indigo-600 text-white text-sm font-bold px-4 py-1.5 rounded-full">
               {recommended.length + matched.length} Offers Found
             </span>
@@ -371,13 +373,16 @@ export default function MyOffers() {
         </motion.div>
 
         {/* Filter chips */}
-        <div className="flex gap-2 mb-8 flex-wrap">
+        <div
+          className="flex gap-2 mb-6 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden"
+          style={{ scrollbarWidth: "none" as const }}
+        >
           {filters.map((f) => (
             <button
               key={f}
               type="button"
               onClick={() => setActiveFilter(f)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 activeFilter === f
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/30"
                   : "bg-white text-slate-600 border border-slate-200 hover:border-indigo-300"
@@ -455,18 +460,18 @@ export default function MyOffers() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 mb-3">
-                  <div>
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-3 mb-3">
+                  <div className="min-w-0">
                     <p className="text-[10px] text-white/60 uppercase">EMI</p>
                     <p className="text-base font-black text-white">
                       ₹{o.emi.toLocaleString("en-IN")}
                     </p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[10px] text-white/60 uppercase">Rate</p>
                     <p className="text-sm font-bold text-white/90">{o.rate}</p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[10px] text-white/60 uppercase">
                       Disbursal
                     </p>
@@ -580,7 +585,7 @@ export default function MyOffers() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-slate-50 rounded-2xl p-6 border border-slate-200"
+          className="bg-slate-50 rounded-2xl p-4 sm:p-6 border border-slate-200"
           data-ocid="offers.unmatched.panel"
         >
           <div className="flex items-start justify-between mb-4">
@@ -602,7 +607,10 @@ export default function MyOffers() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 mb-5 ml-1">
+          <div
+            className="flex gap-2 mb-5 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: "none" }}
+          >
             {[
               "You don't meet the lender's eligibility criteria.",
               "Your location isn't currently serviceable by the lender.",
@@ -610,7 +618,7 @@ export default function MyOffers() {
             ].map((reason) => (
               <div
                 key={reason}
-                className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500"
+                className="flex-shrink-0 flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500"
               >
                 <span className="text-red-400 flex-shrink-0">•</span>
                 {reason}
@@ -624,7 +632,7 @@ export default function MyOffers() {
               type="button"
               onClick={() => scrollCarousel("left")}
               data-ocid="offers.unmatched_carousel.pagination_prev"
-              className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-slate-200 shadow-md flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:shadow-lg transition-all"
+              className="absolute -left-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-slate-200 shadow-md hidden sm:flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:shadow-lg transition-all"
             >
               ←
             </button>
@@ -641,7 +649,7 @@ export default function MyOffers() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 + i * 0.06 }}
                   whileHover={{ y: -3, scale: 1.02 }}
-                  className={`flex-shrink-0 snap-start w-52 bg-gradient-to-br ${lender.color} rounded-2xl p-4 shadow-lg ${lender.shadow} relative overflow-hidden`}
+                  className={`flex-shrink-0 snap-start w-44 sm:w-52 bg-gradient-to-br ${lender.color} rounded-2xl p-4 shadow-lg ${lender.shadow} relative overflow-hidden`}
                   data-ocid={`offers.unmatched.item.${i + 1}`}
                 >
                   {/* Decorative circles */}
@@ -693,7 +701,7 @@ export default function MyOffers() {
               type="button"
               onClick={() => scrollCarousel("right")}
               data-ocid="offers.unmatched_carousel.pagination_next"
-              className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white border border-slate-200 shadow-md flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:shadow-lg transition-all"
+              className="absolute -right-1 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-slate-200 shadow-md hidden sm:flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:shadow-lg transition-all"
             >
               →
             </button>
