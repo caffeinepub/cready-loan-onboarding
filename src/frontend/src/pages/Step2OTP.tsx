@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PANDetailsModal from "../components/PANDetailsModal";
 import StepIndicator from "../components/StepIndicator";
 
 const benefits = [
@@ -45,6 +46,7 @@ export default function Step2OTP() {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(25);
   const [toast, setToast] = useState(true);
+  const [showPANModal, setShowPANModal] = useState(false);
   const r0 = useRef<HTMLInputElement>(null);
   const r1 = useRef<HTMLInputElement>(null);
   const r2 = useRef<HTMLInputElement>(null);
@@ -69,7 +71,7 @@ export default function Step2OTP() {
     setDigits(next);
     if (v && i < 5) refs[i + 1].current?.focus();
     if (next.every((d) => d !== ""))
-      setTimeout(() => navigate("/analyzing"), 300);
+      setTimeout(() => setShowPANModal(true), 300);
   }
 
   function handleKeyDown(i: number, e: React.KeyboardEvent) {
@@ -344,7 +346,7 @@ export default function Step2OTP() {
             type="button"
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => navigate("/analyzing")}
+            onClick={() => setShowPANModal(true)}
             data-ocid="otp.submit_button"
             className="relative w-full py-4 rounded-xl font-bold text-white text-base overflow-hidden group shadow-lg shadow-indigo-200"
             style={{
@@ -395,6 +397,13 @@ export default function Step2OTP() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── PAN Details Modal ─────────────────────────────────── */}
+      <PANDetailsModal
+        isOpen={showPANModal}
+        onConfirm={() => navigate("/analyzing")}
+        onManual={() => navigate("/analyzing")}
+      />
     </div>
   );
 }
