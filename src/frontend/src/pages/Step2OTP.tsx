@@ -402,7 +402,7 @@ export default function Step2OTP() {
       <PANDetailsModal
         isOpen={showPANModal}
         onConfirm={() => navigate("/analyzing")}
-        onManual={() => navigate("/analyzing")}
+        onManual={() => navigate("/pan-input")}
       />
     </div>
   );

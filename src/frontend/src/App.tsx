@@ -18,6 +18,7 @@ import Step3Analyzing from "./pages/Step3Analyzing";
 import Step4Dashboard from "./pages/Step4Dashboard";
 import Step6Review from "./pages/Step6Review";
 import Step7ThankYou from "./pages/Step7ThankYou";
+import StepPANInput from "./pages/StepPANInput";
 import Support from "./pages/Support";
 
 interface AppState {
@@ -54,6 +55,7 @@ function AnimatedRoutes() {
       <Route path="/" element={<Navigate to="/register" replace />} />
       <Route path="/register" element={<Step1Registration />} />
       <Route path="/otp" element={<Step2OTP />} />
+      <Route path="/pan-input" element={<StepPANInput />} />
       <Route path="/analyzing" element={<Step3Analyzing />} />
       <Route path="/dashboard" element={<Step4Dashboard />} />
       <Route path="/offers" element={<Navigate to="/my-offers" replace />} />

@@ -266,10 +266,7 @@ export default function Step7ThankYou() {
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{ background: "#030718" }}
-    >
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-white via-indigo-50 to-violet-50">
       <Confetti />
 
       {/* Aurora shimmer top */}
@@ -277,7 +274,7 @@ export default function Step7ThankYou() {
         className="absolute top-0 left-0 right-0 h-32 pointer-events-none z-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(79,70,229,0.25) 0%, rgba(0,212,255,0.1) 50%, transparent 100%)",
+            "linear-gradient(180deg, rgba(99,102,241,0.15) 0%, rgba(167,139,250,0.08) 50%, transparent 100%)",
         }}
         animate={{ opacity: [0.5, 1, 0.5] }}
         transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
@@ -300,17 +297,17 @@ export default function Step7ThankYou() {
       <motion.div
         animate={{ scale: [1, 1.15, 1], opacity: [0.18, 0.3, 0.18] }}
         transition={{ duration: 7, repeat: Number.POSITIVE_INFINITY }}
-        className="absolute top-1/4 left-1/4 w-[700px] h-[500px] bg-indigo-600 rounded-full blur-[140px]"
+        className="absolute top-1/4 left-1/4 w-[700px] h-[500px] bg-indigo-200 rounded-full blur-[140px] opacity-40"
       />
       <motion.div
         animate={{ scale: [1.1, 1, 1.1], opacity: [0.12, 0.22, 0.12] }}
         transition={{ duration: 9, repeat: Number.POSITIVE_INFINITY }}
-        className="absolute bottom-1/4 right-1/4 w-[600px] h-[450px] bg-violet-600 rounded-full blur-[130px]"
+        className="absolute bottom-1/4 right-1/4 w-[600px] h-[450px] bg-violet-200 rounded-full blur-[130px] opacity-35"
       />
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.18, 0.1] }}
         transition={{ duration: 11, repeat: Number.POSITIVE_INFINITY }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[350px] bg-teal-500 rounded-full blur-[120px]"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[350px] bg-teal-200 rounded-full blur-[120px] opacity-25"
       />
 
       {/* Center content */}
@@ -358,7 +355,7 @@ export default function Step7ThankYou() {
                   style={{
                     background: "linear-gradient(135deg, #4F46E5, #7c3aed)",
                     boxShadow:
-                      "0 0 60px rgba(79,70,229,0.6), 0 20px 40px rgba(79,70,229,0.3)",
+                      "0 0 40px rgba(79,70,229,0.3), 0 12px 32px rgba(79,70,229,0.2)",
                   }}
                 >
                   <svg
@@ -406,7 +403,7 @@ export default function Step7ThankYou() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <motion.div className="inline-flex items-center gap-2 border border-white/15 bg-white/5 backdrop-blur-sm rounded-full px-4 py-1.5 text-white/60 text-xs tracking-widest mb-5">
+              <motion.div className="inline-flex items-center gap-2 border border-indigo-200 bg-indigo-50 backdrop-blur-sm rounded-full px-4 py-1.5 text-indigo-500 text-xs tracking-widest mb-5">
                 <motion.span
                   className="w-1.5 h-1.5 rounded-full bg-emerald-400"
                   animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
@@ -418,7 +415,7 @@ export default function Step7ThankYou() {
                 APPLICATION RECEIVED
               </motion.div>
 
-              <h1 className="text-3xl md:text-4xl font-black text-white leading-tight mb-3">
+              <h1 className="text-3xl md:text-4xl font-black text-slate-800 leading-tight mb-3">
                 Thank You! Your Application{" "}
                 <span
                   className="bg-clip-text text-transparent"
@@ -444,9 +441,10 @@ export default function Step7ThankYou() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="relative inline-flex items-center gap-3 rounded-2xl px-5 py-3 mb-6"
                     style={{
-                      background: "rgba(79,70,229,0.12)",
-                      border: "1px solid rgba(79,70,229,0.35)",
+                      background: "rgba(255,255,255,0.92)",
+                      border: "1px solid rgba(199,210,254,0.8)",
                       backdropFilter: "blur(12px)",
+                      boxShadow: "0 4px 24px rgba(99,102,241,0.12)",
                     }}
                   >
                     <motion.div
@@ -463,11 +461,11 @@ export default function Step7ThankYou() {
                       }}
                     />
                     <div className="flex flex-col items-start relative z-10">
-                      <span className="text-[9px] font-bold tracking-[0.2em] text-indigo-400/70 uppercase">
+                      <span className="text-[9px] font-bold tracking-[0.2em] text-indigo-400 uppercase">
                         Tracking ID
                       </span>
                       <span
-                        className="text-indigo-200 font-black text-base mt-0.5"
+                        className="text-indigo-700 font-black text-base mt-0.5"
                         style={{ letterSpacing: "0.1em" }}
                       >
                         <TypewriterText text={trackingId} delay={0} />
@@ -543,9 +541,9 @@ export default function Step7ThankYou() {
                   onClick={() => navigate("/dashboard")}
                   className="flex items-center justify-center gap-2 font-semibold px-8 py-4 rounded-2xl text-sm border transition-all w-full sm:w-auto"
                   style={{
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    color: "rgba(255,255,255,0.75)",
-                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(99,102,241,0.2)",
+                    color: "rgba(79,70,229,0.85)",
+                    background: "rgba(99,102,241,0.06)",
                     backdropFilter: "blur(12px)",
                   }}
                 >
@@ -592,10 +590,10 @@ export default function Step7ThankYou() {
               <div
                 className="relative overflow-hidden rounded-2xl p-4"
                 style={{
-                  background:
-                    "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(234,88,12,0.1))",
-                  border: "1px solid rgba(245,158,11,0.25)",
+                  background: "rgba(255,255,255,0.95)",
+                  border: "1px solid rgba(245,158,11,0.3)",
                   backdropFilter: "blur(16px)",
+                  boxShadow: "0 4px 20px rgba(245,158,11,0.1)",
                 }}
               >
                 <motion.div
@@ -614,10 +612,10 @@ export default function Step7ThankYou() {
                 <div className="relative flex items-start gap-3">
                   <div className="text-3xl">🏆</div>
                   <div className="flex-1 text-left">
-                    <p className="text-white font-black text-sm">
+                    <p className="text-slate-800 font-black text-sm">
                       🎁 Refer &amp; Earn!
                     </p>
-                    <p className="text-amber-200/70 text-xs mt-1 leading-relaxed">
+                    <p className="text-amber-700/70 text-xs mt-1 leading-relaxed">
                       Refer friends to Cready and unlock up to ₹1000 Amazon
                       vouchers!
                     </p>
@@ -634,7 +632,7 @@ export default function Step7ThankYou() {
                       >
                         Share 🔗
                       </button>
-                      <span className="text-xs text-amber-200/40">
+                      <span className="text-xs text-amber-500/60">
                         Badge #47,821
                       </span>
                     </div>

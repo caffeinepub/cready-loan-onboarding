@@ -154,7 +154,7 @@ function NeuralNetwork() {
   return (
     <svg
       aria-hidden="true"
-      className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.08]"
+      className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.15]"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
@@ -193,7 +193,7 @@ function NeuralNetwork() {
           cx={`${node.x}%`}
           cy={`${node.y}%`}
           r={node.size}
-          fill="#4F46E5"
+          fill="rgba(99,102,241,0.8)"
           animate={{
             opacity: [0.3, 1, 0.3],
             r: [node.size, node.size * 1.5, node.size],
@@ -226,7 +226,7 @@ function DataStream() {
   ];
 
   return (
-    <div className="absolute right-2 top-0 bottom-0 w-20 overflow-hidden opacity-20 hidden lg:flex flex-col select-none">
+    <div className="absolute right-2 top-0 bottom-0 w-20 overflow-hidden opacity-40 hidden lg:flex flex-col select-none">
       <motion.div
         animate={{ y: ["-50%", "0%"] }}
         transition={{
@@ -240,7 +240,7 @@ function DataStream() {
           <div
             // biome-ignore lint/suspicious/noArrayIndexKey: static sequence
             key={i}
-            className="text-[9px] font-mono text-cyan-400 whitespace-nowrap"
+            className="text-[9px] font-mono text-indigo-400/50 whitespace-nowrap"
           >
             {line}
           </div>
@@ -312,7 +312,7 @@ function GlitchText({ text }: { text: string }) {
 function OdometerDigit({ digit }: { digit: string; prev?: string }) {
   const isNum = !Number.isNaN(Number(digit));
   if (!isNum)
-    return <span className="text-6xl font-black text-white">{digit}</span>;
+    return <span className="text-6xl font-black text-slate-800">{digit}</span>;
 
   return (
     <div className="relative overflow-hidden h-16 w-10 inline-flex items-center justify-center">
@@ -441,10 +441,7 @@ export default function Step3Analyzing() {
   const countStr = String(lenderCount).padStart(2, "0");
 
   return (
-    <div
-      className="min-h-screen flex flex-col overflow-x-hidden relative"
-      style={{ background: "#030718" }}
-    >
+    <div className="min-h-screen flex flex-col overflow-x-hidden relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Neural network */}
       <NeuralNetwork />
 
@@ -452,19 +449,22 @@ export default function Step3Analyzing() {
       <div
         className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full blur-[140px] opacity-20"
         style={{
-          background: "radial-gradient(circle, #4F46E5 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)",
         }}
       />
       <div
         className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] opacity-15"
         style={{
-          background: "radial-gradient(circle, #00D4FF 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%)",
         }}
       />
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[160px] opacity-10"
         style={{
-          background: "radial-gradient(circle, #10B981 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 70%)",
         }}
       />
 
@@ -478,7 +478,7 @@ export default function Step3Analyzing() {
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
         <StepIndicator
           currentStep={3}
-          className="[&>div>div]:bg-white/30 [&>span]:text-white/60"
+          className="[&>div>div]:bg-indigo-100 [&>span]:text-slate-500"
         />
       </div>
 
@@ -489,13 +489,13 @@ export default function Step3Analyzing() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10 w-[460px] max-w-[92vw] text-center"
           style={{
-            background: "rgba(255,255,255,0.03)",
+            background: "rgba(255,255,255,0.92)",
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.07)",
+            border: "1px solid rgba(226,232,240,0.8)",
             borderRadius: "24px",
             boxShadow:
-              "0 0 0 1px rgba(79,70,229,0.15) inset, 0 32px 80px rgba(0,0,0,0.6), 0 0 80px rgba(79,70,229,0.08)",
+              "0 0 0 1px rgba(79,70,229,0.08) inset, 0 32px 80px rgba(99,102,241,0.08), 0 8px 32px rgba(0,0,0,0.1)",
             overflow: "hidden",
           }}
         >
@@ -550,7 +550,7 @@ export default function Step3Analyzing() {
               <motion.div
                 className="text-xs font-mono tracking-widest text-center mt-1"
                 animate={{
-                  color: ["#4F46E5", "#00D4FF", "#10B981", "#4F46E5"],
+                  color: ["#4F46E5", "#0891b2", "#059669", "#4F46E5"],
                 }}
                 transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
               >
@@ -567,7 +567,7 @@ export default function Step3Analyzing() {
                 className="text-xl md:text-2xl font-black leading-tight"
                 style={{
                   background:
-                    "linear-gradient(135deg, #ffffff 0%, #a5b4fc 40%, #00D4FF 70%, #10B981 100%)",
+                    "linear-gradient(135deg, #1e293b 0%, #4F46E5 40%, #0891b2 70%, #059669 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
@@ -643,7 +643,7 @@ export default function Step3Analyzing() {
                     background:
                       i <= stage
                         ? ["#4F46E5", "#00D4FF", "#10B981"][i % 3]
-                        : "rgba(255,255,255,0.1)",
+                        : "rgba(99,102,241,0.1)",
                     boxShadow:
                       i === stage
                         ? `0 0 8px ${["#4F46E5", "#00D4FF", "#10B981"][i % 3]}`
@@ -675,7 +675,7 @@ export default function Step3Analyzing() {
                 animate={{ opacity: [1, 0.3, 1], scale: [1, 1.3, 1] }}
                 transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
               />
-              <span className="text-[10px] font-bold tracking-widest text-emerald-400">
+              <span className="text-[10px] font-bold tracking-widest text-emerald-600">
                 BANK-GRADE 256-BIT ENCRYPTION ACTIVE
               </span>
             </motion.div>
@@ -696,12 +696,11 @@ export default function Step3Analyzing() {
             <div
               className="relative overflow-hidden"
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(15,15,40,0.95), rgba(20,20,50,0.95))",
-                border: "1px solid rgba(255,255,255,0.15)",
+                background: "rgba(255,255,255,0.98)",
+                border: "1px solid rgba(226,232,240,0.8)",
                 borderRadius: "16px",
                 boxShadow:
-                  "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(79,70,229,0.3) inset",
+                  "0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px rgba(79,70,229,0.08) inset",
                 backdropFilter: "blur(20px)",
               }}
             >
@@ -732,7 +731,7 @@ export default function Step3Analyzing() {
                       repeat: Number.POSITIVE_INFINITY,
                     }}
                   />
-                  <p className="font-bold text-sm text-white">
+                  <p className="font-bold text-sm text-slate-800">
                     {toasts[toast].title}
                   </p>
                 </div>
