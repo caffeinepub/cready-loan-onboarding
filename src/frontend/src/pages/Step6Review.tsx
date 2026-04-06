@@ -50,7 +50,7 @@ function GridBackground() {
           <path
             d="M 60 0 L 0 0 0 60"
             fill="none"
-            stroke="white"
+            stroke="#6366f1"
             strokeWidth="0.5"
           />
         </pattern>
@@ -63,7 +63,7 @@ function GridBackground() {
           <path
             d="M 240 0 L 0 0 0 240"
             fill="none"
-            stroke="white"
+            stroke="#6366f1"
             strokeWidth="1"
           />
         </pattern>
@@ -74,7 +74,17 @@ function GridBackground() {
   );
 }
 
-function CreditCard3D() {
+function getInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}
+
+function CreditCard3D({ name }: { name: string }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
@@ -98,6 +108,9 @@ function CreditCard3D() {
     };
   }, []);
 
+  const initials = name ? getInitials(name) : "?";
+  const displayName = name ? name.toUpperCase() : "";
+
   return (
     <div
       ref={cardRef}
@@ -108,7 +121,7 @@ function CreditCard3D() {
         transformStyle: "preserve-3d",
       }}
     >
-      {/* Card body */}
+      {/* Card body — intentionally dark, it's a physical card design */}
       <div
         className="absolute inset-0 rounded-2xl overflow-hidden"
         style={{
@@ -176,7 +189,7 @@ function CreditCard3D() {
             className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm"
             style={{ background: "linear-gradient(135deg, #4F46E5, #7c3aed)" }}
           >
-            BB
+            {initials}
           </div>
         </div>
 
@@ -187,7 +200,7 @@ function CreditCard3D() {
           </div>
           <div className="flex items-center justify-between mt-1">
             <span className="text-white text-xs font-bold tracking-wider">
-              BHARAT BHUSHAN
+              {displayName}
             </span>
             <span className="text-slate-400 text-[9px]">CREADY</span>
           </div>
@@ -228,7 +241,7 @@ function ScoreArc() {
           cy="50"
           r={r}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(99,102,241,0.1)"
           strokeWidth="5"
         />
         <motion.circle
@@ -255,7 +268,7 @@ function ScoreArc() {
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.8, type: "spring" }}
-          className="text-2xl font-black text-white"
+          className="text-2xl font-black text-slate-900"
         >
           {score}
         </motion.span>
@@ -281,7 +294,7 @@ const PARTICLES_R = Array.from({ length: 18 }, (_, i) => ({
 
 export default function Step6Review() {
   const navigate = useNavigate();
-  const { email } = useApp();
+  const { email, name } = useApp();
   const inputRef = useRef<HTMLInputElement>(null);
   const [fields, setFields] = useState<Field[]>([
     {
@@ -378,10 +391,10 @@ export default function Step6Review() {
       className="relative min-h-screen overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, #060c1a 0%, #0a0f2e 40%, #0d1635 70%, #060e1a 100%)",
+          "linear-gradient(135deg, #f8faff 0%, #eef2ff 40%, #f0f4ff 70%, #f8faff 100%)",
       }}
     >
-      {/* Vivid orbs */}
+      {/* Vivid orbs — reduced opacity for light background */}
       <GradientOrb
         style={{
           width: 700,
@@ -389,7 +402,7 @@ export default function Step6Review() {
           top: "-25%",
           left: "-15%",
           background:
-            "radial-gradient(circle, rgba(99,102,241,0.35) 0%, transparent 65%)",
+            "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 65%)",
         }}
         animate={{ scale: [1, 1.25, 1], x: [0, 60, 0], y: [0, 30, 0] }}
         transition={{
@@ -405,7 +418,7 @@ export default function Step6Review() {
           bottom: "-20%",
           right: "-15%",
           background:
-            "radial-gradient(circle, rgba(168,85,247,0.3) 0%, transparent 65%)",
+            "radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 65%)",
         }}
         animate={{ scale: [1, 1.2, 1], x: [0, -40, 0], y: [0, -50, 0] }}
         transition={{
@@ -422,7 +435,7 @@ export default function Step6Review() {
           top: "35%",
           right: "10%",
           background:
-            "radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 65%)",
+            "radial-gradient(circle, rgba(0,212,255,0.18) 0%, transparent 65%)",
         }}
         animate={{ scale: [1, 1.35, 1], x: [0, 25, 0], y: [0, -35, 0] }}
         transition={{
@@ -445,7 +458,7 @@ export default function Step6Review() {
             top: `${p.y}%`,
             width: p.size,
             height: p.size,
-            background: "rgba(165,180,252,0.5)",
+            background: "rgba(99,102,241,0.25)",
           }}
           animate={{ y: [0, -25, 0], opacity: [0.1, 0.5, 0.1] }}
           transition={{
@@ -495,15 +508,15 @@ export default function Step6Review() {
       {/* Top bar */}
       <div
         className="relative z-10 flex items-center justify-between px-6 py-4"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ borderBottom: "1px solid rgba(99,102,241,0.1)" }}
       >
         <button
           type="button"
           data-ocid="review.back.button"
           onClick={() => window.history.back()}
-          className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors group"
+          className="flex items-center gap-2 text-slate-500 hover:text-slate-800 text-sm transition-colors group"
         >
-          <span className="flex items-center justify-center w-7 h-7 rounded-full group-hover:bg-white/10 transition-colors">
+          <span className="flex items-center justify-center w-7 h-7 rounded-full group-hover:bg-indigo-50 transition-colors">
             <svg
               aria-hidden="true"
               className="w-4 h-4"
@@ -556,21 +569,21 @@ export default function Step6Review() {
           <motion.div
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest mb-4"
             style={{
-              background: "rgba(99,102,241,0.12)",
-              border: "1px solid rgba(99,102,241,0.3)",
-              color: "#a5b4fc",
+              background: "rgba(99,102,241,0.08)",
+              border: "1px solid rgba(99,102,241,0.2)",
+              color: "#6366f1",
             }}
             animate={{
               borderColor: [
-                "rgba(99,102,241,0.3)",
-                "rgba(0,212,255,0.4)",
-                "rgba(99,102,241,0.3)",
+                "rgba(99,102,241,0.2)",
+                "rgba(0,130,200,0.3)",
+                "rgba(99,102,241,0.2)",
               ],
             }}
             transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
           >
             <motion.span
-              className="w-1.5 h-1.5 rounded-full bg-indigo-400"
+              className="w-1.5 h-1.5 rounded-full bg-indigo-500"
               animate={{ opacity: [1, 0.3, 1] }}
               transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
             />
@@ -578,7 +591,7 @@ export default function Step6Review() {
           </motion.div>
 
           <h1 className="text-4xl md:text-5xl font-black mb-3 leading-tight">
-            <span className="text-white">Review your </span>
+            <span className="text-slate-900">Review your </span>
             <span
               className="bg-clip-text text-transparent"
               style={{
@@ -589,7 +602,7 @@ export default function Step6Review() {
               details.
             </span>
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed max-w-md mx-auto">
+          <p className="text-slate-500 text-sm leading-relaxed max-w-md mx-auto">
             Securely fetched from the credit bureau. Review and confirm before
             we match you with the best offers.
           </p>
@@ -607,20 +620,20 @@ export default function Step6Review() {
             <div
               className="rounded-3xl p-6"
               style={{
-                background: "rgba(255,255,255,0.03)",
+                background: "rgba(255,255,255,0.85)",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 24px 80px rgba(0,0,0,0.4)",
+                border: "1px solid rgba(99,102,241,0.12)",
+                boxShadow: "0 24px 80px rgba(99,102,241,0.12)",
               }}
             >
-              <p className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase mb-4 text-center">
+              <p className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase mb-4 text-center">
                 YOUR CREDIT CARD
               </p>
-              <CreditCard3D />
+              <CreditCard3D name={name || ""} />
               <ScoreArc />
               <div className="mt-4 text-center">
-                <p className="text-[10px] text-slate-500 tracking-widest uppercase">
+                <p className="text-[10px] text-slate-400 tracking-widest uppercase">
                   Credit Profile
                 </p>
                 <div className="flex items-center justify-center gap-3 mt-3">
@@ -636,7 +649,7 @@ export default function Step6Review() {
                       >
                         {stat.val}
                       </div>
-                      <div className="text-[9px] text-slate-600 tracking-wider uppercase">
+                      <div className="text-[9px] text-slate-400 tracking-wider uppercase">
                         {stat.label}
                       </div>
                     </div>
@@ -656,18 +669,18 @@ export default function Step6Review() {
             <div
               className="rounded-3xl p-5 md:p-7"
               style={{
-                background: "rgba(255,255,255,0.03)",
+                background: "rgba(255,255,255,0.85)",
                 backdropFilter: "blur(20px)",
                 WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                boxShadow: "0 24px 80px rgba(0,0,0,0.4)",
+                border: "1px solid rgba(99,102,241,0.12)",
+                boxShadow: "0 24px 80px rgba(99,102,241,0.12)",
               }}
             >
               <motion.div
                 className="h-px w-full mb-5 rounded-full"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent, rgba(99,102,241,0.5), rgba(0,212,255,0.5), transparent)",
+                    "linear-gradient(90deg, transparent, rgba(99,102,241,0.3), rgba(0,212,255,0.3), transparent)",
                 }}
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
@@ -686,17 +699,14 @@ export default function Step6Review() {
                       >
                         <div className="flex items-center gap-1.5 mb-1.5 ml-1">
                           <span className="text-xs">{f.icon}</span>
-                          <p
-                            className="text-[9px] font-bold tracking-[0.2em] uppercase"
-                            style={{ color: "rgba(165,180,252,0.6)" }}
-                          >
+                          <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-indigo-400">
                             {f.label}
                           </p>
                           <span
                             className="ml-1 text-[8px] px-1.5 py-0.5 rounded-full font-bold tracking-wider"
                             style={{
-                              background: "rgba(99,102,241,0.12)",
-                              color: "rgba(165,180,252,0.5)",
+                              background: "rgba(99,102,241,0.08)",
+                              color: "#6366f1",
                             }}
                           >
                             {f.category}
@@ -705,24 +715,23 @@ export default function Step6Review() {
                         <motion.div
                           className="relative flex items-center rounded-xl overflow-hidden group"
                           style={{
-                            background: "rgba(255,255,255,0.03)",
-                            border: "1px solid rgba(255,255,255,0.07)",
+                            background: "rgba(99,102,241,0.03)",
+                            border: "1px solid rgba(99,102,241,0.1)",
                           }}
                           animate={
                             editing === i
                               ? {
                                   boxShadow:
-                                    "0 0 0 1.5px rgba(99,102,241,0.6), 0 4px 20px rgba(99,102,241,0.15)",
-                                  background: "rgba(255,255,255,0.06)",
+                                    "0 0 0 1.5px rgba(99,102,241,0.6), 0 4px 20px rgba(99,102,241,0.1)",
+                                  background: "rgba(255,255,255,0.95)",
                                 }
                               : {}
                           }
                           whileHover={
                             editing !== i
                               ? {
-                                  boxShadow:
-                                    "0 0 0 1px rgba(99,102,241,0.3), 0 2px 12px rgba(99,102,241,0.08)",
-                                  background: "rgba(255,255,255,0.05)",
+                                  boxShadow: "0 0 0 1px rgba(99,102,241,0.3)",
+                                  background: "rgba(99,102,241,0.05)",
                                 }
                               : {}
                           }
@@ -737,7 +746,7 @@ export default function Step6Review() {
                               className="absolute inset-0 pointer-events-none"
                               style={{
                                 background:
-                                  "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.025) 50%, transparent 100%)",
+                                  "linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.04) 50%, transparent 100%)",
                               }}
                               animate={{ x: ["-100%", "200%"] }}
                               transition={{
@@ -761,16 +770,13 @@ export default function Step6Review() {
                               <input
                                 ref={inputRef}
                                 data-ocid={`review.field.input.${i + 1}`}
-                                className="flex-1 text-sm text-white outline-none bg-transparent placeholder-slate-600"
+                                className="flex-1 text-sm text-slate-900 outline-none bg-transparent placeholder-slate-400"
                                 value={f.value}
                                 onChange={(e) => update(i, e.target.value)}
                                 onBlur={() => setEditing(null)}
                               />
                             ) : (
-                              <span
-                                className="flex-1 text-sm font-semibold"
-                                style={{ color: "rgba(226,232,240,0.95)" }}
-                              >
+                              <span className="flex-1 text-sm font-semibold text-slate-900">
                                 {formatFieldValue(f)}
                               </span>
                             )}
@@ -781,7 +787,7 @@ export default function Step6Review() {
                             data-ocid={`review.field.edit_button.${i + 1}`}
                             onClick={() => setEditing(i)}
                             className="flex items-center justify-center w-9 h-9 mr-2 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                            style={{ color: "rgba(165,180,252,0.8)" }}
+                            style={{ color: "#6366f1" }}
                           >
                             <svg
                               aria-hidden="true"
@@ -814,7 +820,7 @@ export default function Step6Review() {
                 className="h-px w-full mt-5 mb-5 rounded-full"
                 style={{
                   background:
-                    "linear-gradient(90deg, transparent, rgba(16,185,129,0.4), rgba(99,102,241,0.4), transparent)",
+                    "linear-gradient(90deg, transparent, rgba(16,185,129,0.3), rgba(99,102,241,0.3), transparent)",
                 }}
                 animate={{ opacity: [0.3, 0.8, 0.3] }}
                 transition={{
@@ -924,14 +930,14 @@ export default function Step6Review() {
               key={item.label}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(99,102,241,0.05)",
+                border: "1px solid rgba(99,102,241,0.12)",
               }}
               animate={{
                 borderColor: [
-                  "rgba(255,255,255,0.08)",
-                  "rgba(99,102,241,0.2)",
-                  "rgba(255,255,255,0.08)",
+                  "rgba(99,102,241,0.12)",
+                  "rgba(99,102,241,0.3)",
+                  "rgba(99,102,241,0.12)",
                 ],
               }}
               transition={{
@@ -941,10 +947,7 @@ export default function Step6Review() {
               }}
             >
               <span className="text-xs">{item.icon}</span>
-              <span
-                className="text-[11px] font-semibold tracking-wider"
-                style={{ color: "rgba(148,163,184,0.6)" }}
-              >
+              <span className="text-[11px] font-semibold tracking-wider text-slate-500">
                 {item.label}
               </span>
             </motion.div>
